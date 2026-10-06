@@ -1,0 +1,6 @@
+interface:
+  display_name: "Proof-Driven Engineering"
+  short_description: "Measured performance and adversarial code review"
+  default_prompt: "Use $proof-driven-engineering to complete this change with measured performance, adversarial checks, and current acceptance evidence."
+policy:
+  allow_implicit_invocation: true
