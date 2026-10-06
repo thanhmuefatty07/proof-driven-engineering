@@ -1,9 +1,9 @@
 ---
 name: proof-driven-engineering
-description: Performance-first implementation, debugging, architecture, and code review with adversarial security checks, requirement continuity, and measured acceptance. Use for substantive repository changes or optimization; keep trivial edits lightweight.
+description: Performance-first implementation, debugging, architecture, and code review with verified dependencies/APIs, adversarial security checks, requirement continuity, and measured acceptance. Use for substantive repository changes or optimization; keep trivial edits lightweight.
 license: MIT
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Proof-Driven Engineering
@@ -44,6 +44,17 @@ Inspect the working tree and relevant local instructions before editing.
 Preserve existing user changes. Locate the authoritative definition, important
 callers, consumers, tests, and serialized/configuration boundaries. Inspect actual
 dependency/runtime versions when behavior is version-dependent.
+
+Never invent packages, import paths, API members, signatures, CLI flags, config
+keys, protocol fields, or platform support. For new, unfamiliar, or version-sensitive
+library/API/tool use, read [dependency-grounding.md](references/dependency-grounding.md).
+Establish the exact dependency identity and resolved version, check the needed
+surface against version-matched primary documentation/source, then verify the
+actual integration in the target environment. A plausible name, search snippet,
+registry entry, or mocked test is not enough. Do not install a guessed package
+to make an invented import work. If evidence is unavailable, use a verified
+alternative or report the affected requirement as `NOT VERIFIED`; continue
+independent work without pretending the unsupported integration is complete.
 
 Scale evidence to the change:
 

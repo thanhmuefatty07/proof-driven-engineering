@@ -11,6 +11,7 @@ agents. One portable skill, with focused references loaded only when needed.
 - Optimize the measured bottleneck under correctness, security, and resource constraints.
 - Permit complex techniques when comparable measurements justify their benefit.
 - Trace architectural ownership and producer/consumer contracts before changing them.
+- Ground dependency identity, resolved versions, imports, APIs, flags, and configuration in primary evidence before integration.
 - Challenge authorization, caches, concurrency, malformed input, and failure recovery.
 - Keep the current user objective and acceptance criteria across steering and compaction.
 - Reconcile ambiguous tool writes, diagnose errors, and verify actual resulting state.
@@ -71,7 +72,7 @@ full skill. This repository does not automatically edit host rules or settings.
 skills/proof-driven-engineering/
   SKILL.md
   agents/openai.yaml
-  references/                 Architecture, security, continuity, verification
+  references/                 Architecture, security, dependency grounding, continuity, verification
   scripts/check_evidence.py    Optional recorded-coverage/freshness gate
 evals/                        Synthetic behavioral prompts and fixtures
 tests/                        Package and evidence-gate checks

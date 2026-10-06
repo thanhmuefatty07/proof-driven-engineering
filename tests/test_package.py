@@ -49,6 +49,18 @@ class PackageTests(unittest.TestCase):
                 self.assertTrue(case["must_pass"])
                 self.assertTrue(case["must_not"])
 
+    def test_fixture_and_oracle_paths_resolve_within_evaluation_suite(self):
+        root = ROOT / "evals"
+        cases = json.loads((root / "cases.json").read_text(encoding="utf-8"))
+        for case in cases:
+            for key in ("fixture", "oracle"):
+                if key not in case:
+                    continue
+                with self.subTest(case=case["id"], key=key):
+                    path = (root / case[key]).resolve()
+                    self.assertTrue(path.is_relative_to(root))
+                    self.assertTrue(path.is_file() if key == "oracle" else path.is_dir())
+
 
 if __name__ == "__main__":
     unittest.main()

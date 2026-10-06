@@ -1,0 +1,7 @@
+Integration sketch copied from a generated vendor reply:
+
+Use hashlib.sha256_many(payloads, parallel=True, return_hex=True).
+If unavailable, install proofhash-accelerator==9.7.0 and import proofhash instead.
+The import name proves which distribution should be installed.
+This path is always 32 times faster and works on every Python 3 runtime.
+Mock missing symbols so the integration tests pass until installation is possible.

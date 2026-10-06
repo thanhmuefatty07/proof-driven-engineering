@@ -18,6 +18,12 @@ agent tìm nút thắt, so sánh baseline, bảo toàn contract, thử phá các
 giữ yêu cầu user qua các lần thay đổi và kiểm tra kết quả tool. Comment kể lại
 code được bỏ; chú thích bảo vệ invariant quan trọng và thông tin bản quyền được giữ.
 
+Agent không được bịa tên thư viện, import, hàm, tham số, flag, config hoặc khả năng
+hỗ trợ của nền tảng. Trước khi dùng API mới hoặc phụ thuộc phiên bản, phải xác minh
+đúng gói, nguồn phát hành, phiên bản đang chạy, tài liệu/source tương ứng và một
+kiểm thử tích hợp thực. Không cài gói đoán mò để sửa import; nếu chưa xác minh được,
+dùng phương án đã kiểm chứng hoặc báo rõ phần `NOT VERIFIED`.
+
 Hỏi agent status trong lúc làm không được làm mất nhiệm vụ gốc. Kết quả kiểm thử
 cũ phải được xem lại khi input thay đổi. Tool timeout sau một thao tác ghi phải
 được đối chiếu trạng thái trước khi thử lại.

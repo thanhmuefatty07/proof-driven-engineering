@@ -16,6 +16,12 @@ not a ranking of the world's best skills. Popularity was used only for discovery
 | [Vercel performance skills](https://github.com/vercel-labs/agent-skills/blob/063bee94c3f4df8453406c830b0a7df0f2860278/skills/react-best-practices/SKILL.md) | Prioritize high-impact costs before small instruction-level changes | React-specific recommendations remain domain-specific |
 | [OWASP ASVS](https://owasp.org/projects/asvs) | Applicable security requirements become explicit controls/tests | No implied ASVS certification; record versions for conformance claims |
 | [NIST SSDF](https://csrc.nist.gov/projects/ssdf) | Secure development and response grounded in risk and outcomes | This skill is not an organizational compliance program |
+| [USENIX package-hallucination research, authors' summary](https://www.usenix.org/publications/loginonline/we-have-package-you-comprehensive-analysis-package-hallucinations-code) | Explicit checks against invented dependency names and their supply-chain consequences | Historical model observations do not predict this skill's failure rate |
+| [PyPA distribution/import distinction](https://packaging.python.org/en/latest/discussions/distribution-package-vs-import-package/) | Verify installation-name to import-name mapping; do not install by guessed import | Python naming rules are not imposed on other ecosystems |
+| [pip secure installs](https://pip.pypa.io/en/stable/topics/secure-installs/) | Inspect execution/integrity risks before installation; preserve approved hash controls | Artifact integrity does not prove benign behavior; flags depend on the actual tool version |
+| [pip index-source warning](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-extra-index-url) | Treat private/public index substitution as a dependency-confusion boundary | No automatic registry rewrites |
+| [npm lockfile reference, v11](https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json/) | Check resolved artifact identity, version, integrity, and installation-script metadata | npm-specific fields require the matching CLI/lockfile format |
+| [Python hashlib reference, 3.11](https://docs.python.org/3.11/library/hashlib.html) | Version-matched API and digest behavior for the synthetic grounding eval | The local runtime must still be inspected; later patch-level docs are not exact-binary evidence |
 
 ## Chosen approach
 
