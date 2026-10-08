@@ -3,7 +3,7 @@ name: proof-driven-engineering
 description: Performance-first implementation, debugging, architecture, and code review with verified dependencies/APIs, adversarial security checks, requirement continuity, and measured acceptance. Use for substantive repository changes or optimization; keep trivial edits lightweight.
 license: MIT
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Proof-Driven Engineering
@@ -70,21 +70,27 @@ owner. A bug hypothesis must explain the observed failure.
 
 ## 3. Choose and build for performance
 
-For performance work or architecture that affects capacity, read
+For substantive code generation or work affecting runtime/capacity, read
 [architecture-performance.md](references/architecture-performance.md).
 
-Identify the target workload, platform, budgets, and objective metric. Use a
-representative baseline and profile the critical path. Optimize the largest
-relevant cost first: algorithm/data layout, I/O/query plan, batching, allocation,
-serialization, synchronization, then measured low-level costs.
+Choose algorithms, data layout, and memory behavior for the expected workload
+and execution frequency before implementing a new feature. Allocate effort by
+likely impact; do not micro-optimize every line or require expensive experiments
+for cold paths and trivial edits. For consequential performance decisions,
+identify the workload, platform, budgets, and objective metric; establish a
+representative baseline, profile the critical path, and compare credible
+implementation alternatives. Optimize the largest relevant cost first.
 
 Prefer the fastest demonstrated feasible candidate under the user's constraints.
 Permit specialized structures, native code, SIMD, pooling, parallelism, or caching
 when the workload and evidence justify them. Require explicit ownership,
-invalidation, resource bounds, compatibility, and failure behavior. At comparable
-performance, prefer the smaller reversible change. Do not remove security checks,
-change numeric/ordering semantics, or assume a particular compiler/hardware to
-manufacture a win.
+invalidation, resource bounds, compatibility, and failure behavior. Within these
+constraints, demonstrated runtime performance outranks source elegance, brevity,
+readability, and maintainability preferences; do not reject a faster feasible
+implementation solely because it is harder to read. When differences are within
+measurement uncertainty, prefer the simpler reversible change. Do not remove
+security checks, change numerical, ordering, concurrency, or externally observable contracts, or
+assume unsupported compiler/hardware behavior to manufacture a win.
 
 Keep the semantic diff coherent and scoped. Reuse existing project primitives
 before adding dependencies or new layers. Do not impose architectures, rewrite
@@ -98,8 +104,9 @@ owning boundary instead of relying on future agents to remember them.
 
 Omit comments that narrate code, decorative banners, agent explanations, and
 speculative TODOs. Keep a short comment only when it preserves a non-obvious
-invariant, protocol quirk, security requirement, concurrency rule, or measured
-trade-off. Preserve required license notices and public contract documentation.
+invariant, protocol quirk, security requirement, concurrency rule, compiler
+behavior, cache invalidation rule, or measured trade-off. Preserve required license
+notices and public contract documentation.
 Do not minify or obscure source without a measured deployment/runtime benefit.
 
 ## 4. Attack the assumptions

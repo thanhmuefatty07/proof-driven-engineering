@@ -1,7 +1,7 @@
 # Validation Status
 
-Release 0.2.0 executable checks refreshed within the following scope on 2026-10-07.
-Earlier forward runs remain explicitly attributed to release 0.1.0 below.
+Local version 0.3.0 executable checks refreshed within this scope on 2026-10-08.
+Earlier forward runs remain attributed to versions 0.1.0 and 0.2.0 below.
 
 The executable checks cover skill discovery metadata, distributed references,
 recorded acceptance coverage, exit/status validation, source-hash freshness, and
@@ -82,6 +82,13 @@ no package installation or network call; these local receipts are not a sandbox
 or cryptographic execution attestation.
 
 ## Not Verified
+
+The 0.3.0 instruction update was inspected against the requested generation,
+selection, compiler/runtime, and benchmark rules. Existing security, dependency
+grounding, continuity, and verification instructions remain unchanged. It adds
+no executable optimization or new dependency. No new consuming-agent performance
+evaluation was run; earlier forward outcomes do not establish consistent steering
+or improved performance under the revised instructions.
 
 No paired baseline/skill benchmark, automatic invocation study, real compaction
 evaluation, exhaustive object compatibility/concurrent-mutation test, production
