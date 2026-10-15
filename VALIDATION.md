@@ -1,5 +1,25 @@
 # Validation Status
 
+## Release 0.4.1: Evidence-Based Test Portfolio
+
+Checked on 2026-10-16 with Windows and Python 3.11.9. This instruction-only
+update adds a minimal-discriminating-set rule and evidence requirements before
+consolidating or deleting tests. It adds no executable code, test case, or
+dependency.
+
+| Check | Observed result |
+| --- | --- |
+| `python -m unittest discover -s tests -v` | 21 discovered: 20 passed, 1 skipped; exit 0 |
+| `python -m unittest discover -s evals/fixtures/catalog -v` | 3 passed; exit 0 |
+| `git diff --check` | No whitespace errors; exit 0 |
+| Scratch cleanup | Run-owned scratch root was empty and removed; verified absent |
+
+The skipped symlink test could not create a symlink in this environment; that
+runtime path remains `NOT VERIFIED`. No consuming-agent evaluation of the new
+test-consolidation rule was run. The 0.4.0 acceptance example predates this rule
+and is not evidence that agents follow it. Skill instructions guide behavior
+but do not mechanically enforce test quality or guarantee agent compliance.
+
 ## Release 0.4.0: Test Quality and Artifact Lifecycle
 
 Checked on 2026-10-16 with Windows AMD64, Python 3.11.9 and PyYAML 6.0.3.

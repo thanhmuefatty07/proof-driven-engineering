@@ -28,12 +28,14 @@ Hỏi agent status trong lúc làm không được làm mất nhiệm vụ gốc
 cũ phải được xem lại khi input thay đổi. Tool timeout sau một thao tác ghi phải
 được đối chiếu trạng thái trước khi thử lại.
 
-Từ phiên bản 0.4.0, [hướng dẫn kiểm thử](skills/proof-driven-engineering/references/testing-quality.md)
+Từ phiên bản 0.4.1, [hướng dẫn kiểm thử](skills/proof-driven-engineering/references/testing-quality.md)
 yêu cầu mỗi kiểm thử nhắm vào lỗi cụ thể, có kết quả kỳ vọng độc lập và đi qua
 ranh giới thực phù hợp với kết luận. Agent phải dùng lại coverage có ích, kiểm
 chứng test bắt được hành vi sai, báo trung thực phần chưa chạy và hoàn thành
 các gate bắt buộc. Số lượng test hoặc test chỉ kiểm tra mock không chứng minh
-được chất lượng sản phẩm.
+được chất lượng sản phẩm. Phiên bản 0.4.1 chỉ cho phép hợp nhất hoặc xóa test
+khi có bằng chứng về contract, oracle, ranh giới thực và consumer; tên hoặc mã
+giống nhau không đủ để kết luận test trùng lặp.
 
 Trước khi sinh dữ liệu, agent phải xác định nơi tạm, mức phát sinh dự kiến,
 dung lượng còn trống, chủ sở hữu và cách thu dọn. Cache build tương thích được

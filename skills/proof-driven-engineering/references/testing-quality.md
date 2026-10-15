@@ -34,6 +34,33 @@ minimal mutation in an isolated copy. Never rewind dirty user work, weaken a liv
 system, or keep a mutated implementation. If this cannot be done safely, describe
 the missing sensitivity evidence rather than inventing a red/green history.
 
+## Keep the test portfolio focused
+
+Before adding or removing tests, map the relevant existing checks to their
+contract, plausible defect, independent oracle, exercised boundary, and decisive
+assertion. Add the smallest set that covers each distinct defect class and each
+interaction required by the failure model. Combine cases when one run can make
+clear independent assertions; separate them when they exercise different owners,
+boundaries, setup/lifecycle rules, or recovery paths. Do not create one test file
+or case per requirement, branch, or input value. Extend the owning suite by
+default. A new file needs a concrete reason, such as a distinct owner, runner
+setup, or fixture lifecycle.
+
+Names, source-code similarity, shared fixture values, and line-coverage overlap
+do not prove behavioral redundancy. Consolidate or delete a test only after
+confirming that the surviving check preserves the same contract, oracle,
+boundary, and failure signal; that the removed test contributes no independent
+assertion or failure mode; and that no discovery rule, CI job, manifest, or
+document relies on it. Where practical, verify that the surviving check still
+rejects a representative wrong behavior. Preserve a test when it protects a
+distinct behavior or boundary. If equivalence or consumer impact is uncertain,
+keep it and report the unresolved review instead of deleting speculatively.
+
+Do not set arbitrary test-count or file-count targets. Do not delete valid
+boundary, failure, or recovery cases to make a suite smaller or faster. Report
+material consolidation with the removed check, its former coverage, the retained
+check that now supplies that evidence, and any verification limit.
+
 ## Match realism to the claim
 
 Use the smallest real path sufficient to expose the defect. Synthetic data can

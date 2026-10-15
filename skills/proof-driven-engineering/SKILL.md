@@ -3,7 +3,7 @@ name: proof-driven-engineering
 description: Performance-first implementation, debugging, architecture, and code review with verified dependencies/APIs, adversarial security checks, requirement continuity, and measured acceptance. Use for substantive repository changes or optimization; keep trivial edits lightweight.
 license: MIT
 metadata:
-  version: "0.4.0"
+  version: "0.4.1"
 ---
 
 # Proof-Driven Engineering
@@ -103,11 +103,13 @@ unrelated modules, or change a language/framework without a required benefit.
 For meaningful behavior changes, establish a test or executable acceptance oracle
 that can detect the relevant mistake. Fixes should leave a regression check when
 feasible. Respect required local testing rules and report unavailable checks.
-Before designing, adding, selecting, or interpreting tests, read
-[testing-quality.md](references/testing-quality.md). Require an independently
-derived observable result, a credible wrong behavior the check rejects, and the
-real boundary needed by the claim. Extend existing coverage before adding tests;
-test counts, source-text assertions, and mocks alone do not establish correctness.
+Before designing, adding, selecting, removing, or interpreting tests, read
+[testing-quality.md](references/testing-quality.md). Map relevant existing
+coverage first; add only the smallest set that distinguishes uncovered defects,
+and remove tests as redundant only with behavior, boundary, and consumer evidence.
+Require an independently derived observable result, a credible wrong behavior
+the check rejects, and the real boundary needed for the claim. Test counts,
+source-text assertions, and mocks alone do not establish correctness.
 Turn critical invariants into types, validation, constraints, or tests at their
 owning boundary instead of relying on future agents to remember them.
 
