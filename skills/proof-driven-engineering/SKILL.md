@@ -3,7 +3,7 @@ name: proof-driven-engineering
 description: Performance-first implementation, debugging, architecture, and code review with verified dependencies/APIs, adversarial security checks, requirement continuity, and measured acceptance. Use for substantive repository changes or optimization; keep trivial edits lightweight.
 license: MIT
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
 ---
 
 # Proof-Driven Engineering
@@ -32,6 +32,10 @@ replace it only when the user cancels or requests an incompatible outcome.
 Update the contract on new instructions, consequential decisions, failure, and
 before a context handoff. Read [continuity-tools.md](references/continuity-tools.md)
 for long tasks, interrupted work, external writes, or unreliable tools.
+
+At a verified milestone, update one concise checkpoint in the configured private
+record location. Record decisions, evidence, limits, and the next action; do not
+create a new report for every command or copy raw run data into public files.
 
 After interruption or compaction, reconcile that state with the latest user
 messages and actual files before the next edit or final answer. Missing context
@@ -99,6 +103,11 @@ unrelated modules, or change a language/framework without a required benefit.
 For meaningful behavior changes, establish a test or executable acceptance oracle
 that can detect the relevant mistake. Fixes should leave a regression check when
 feasible. Respect required local testing rules and report unavailable checks.
+Before designing, adding, selecting, or interpreting tests, read
+[testing-quality.md](references/testing-quality.md). Require an independently
+derived observable result, a credible wrong behavior the check rejects, and the
+real boundary needed by the claim. Extend existing coverage before adding tests;
+test counts, source-text assertions, and mocks alone do not establish correctness.
 Turn critical invariants into types, validation, constraints, or tests at their
 owning boundary instead of relying on future agents to remember them.
 
@@ -133,6 +142,13 @@ Choose the smallest reliable capability that resolves the current unknown.
 Prefer structured APIs and parsers; inspect schemas/help/version instead of
 guessing flags. Search before broad reads; fetch relevant ranges; cache evidence
 until inputs change. Batch independent reads and serialize dependent mutations.
+
+Before artifact-producing checks, identify the owned scratch location, compatible
+reusable caches, expected file/byte/time footprint, available capacity, and cleanup
+or retention policy. Bound generation using available runner controls. Stop or
+narrow a run that cannot fit safely; report the missing gate rather than dropping
+it. Do not create a fresh build tree per retry or restart an unchanged broad scan
+when a retained inventory or resumable traversal answers the remaining question.
 
 Check tool exit codes, errors, truncation, pagination, partial results, and actual
 post-write state. Diagnose failures and change the method when evidence rejects

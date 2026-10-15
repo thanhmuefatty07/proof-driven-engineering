@@ -25,6 +25,16 @@ not a ranking of the world's best skills. Popularity was used only for discovery
 
 ## Chosen approach
 
+The 0.4.0 test lifecycle sources below were reviewed on 2026-10-16. The update uses the official
+[pytest temporary-directory guide](https://docs.pytest.org/en/stable/how-to/tmp_path.html)
+and [fixture teardown guide](https://docs.pytest.org/en/stable/how-to/fixtures.html#teardown-cleanup-aka-fixture-finalization).
+They inform ownership, retention and teardown decisions, including the danger of
+reusing an explicit base temporary directory. Actual runner versions and cleanup
+behavior must still be verified. The
+[official Codex instruction guide](https://developers.openai.com/codex/guides/agents-md)
+informs optional host integration; editing a skill does not itself change global
+instructions or enforce a filesystem quota.
+
 Keep one performance-first engineering workflow with specialized references.
 Performance is optimized among candidates that preserve required correctness,
 security, compatibility, and resources. Complexity is allowed when its benefit

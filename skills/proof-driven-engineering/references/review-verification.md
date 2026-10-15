@@ -25,6 +25,11 @@ resolve the root owner and inspect sibling paths rather than repeating symptoms.
 
 ## Verification that can fail meaningfully
 
+Read [testing-quality.md](testing-quality.md) when selecting or evaluating tests.
+It defines oracle sensitivity, realistic boundary evidence, honest execution
+results, and ownership of temporary data. Package/schema checks alone cannot
+establish that an agent follows those instructions.
+
 Map acceptance criteria to their oracle: compiler/type check, direct behavior,
 integration/contract, user journey, property/fuzz, security reproduction, load,
 or recovery test. Match the oracle to the claim. Source text matching cannot show

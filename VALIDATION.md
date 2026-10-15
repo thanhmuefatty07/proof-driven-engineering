@@ -1,6 +1,41 @@
 # Validation Status
 
-Local version 0.3.0 executable checks refreshed within this scope on 2026-10-08.
+## Release 0.4.0: Test Quality and Artifact Lifecycle
+
+Checked on 2026-10-16 with Windows AMD64, Python 3.11.9 and PyYAML 6.0.3.
+This release changes instructions and optional host guidance, with no new runtime
+code or dependency. It adds a focused test-quality reference and private milestone
+practice; operating-system quotas remain the host's responsibility.
+
+| Check | Observed result |
+| --- | --- |
+| `python -B -m unittest discover -s tests -v` | 21 discovered: 20 passed, 1 skipped; exit 0 |
+| `python -B -m unittest discover -s evals/fixtures/catalog -v` | 3 passed; exit 0 |
+| Bundled Codex skill manifest validator | Valid; exit 0 |
+| Owned scratch after package checks | No remaining entries |
+| Isolated known-bad catalog control | Existing 3-test suite executed; duplicate/first-match test failed for the intended wrong result; exit 1 |
+| Consuming-agent example and parent verification | One-line repair, existing 3 tests passed; no added test files; parent checked 7 independent contract vectors and rejected a controlled wrong result |
+
+The consuming agent received the candidate skill, a small isolated faulty catalog
+and its existing tests, without a supplied repair or grading oracle. The parent
+observed the failing baseline, inspected the resulting one-line change, verified
+the existing tests' exact hash was unchanged, and reran the suite. Independent
+vectors covered order, duplicate requests, first-match object identity, missing
+and empty inputs, input preservation, equality semantics and unhashable IDs. The
+original public fixtures, tests and evidence-gate script stayed unchanged. The
+owned workspace retained only its two source/test files and instruction file;
+no generated run data was present. Raw evidence remains private.
+
+This is one synthetic in-process acceptance example. Model settings were
+inherited; the exact consuming model identifier was not captured. It does not
+establish comparative effectiveness, exhaustive test quality, real external or
+cross-platform behavior, interruption recovery, automatic quota enforcement, or
+future agent compliance. The Windows symlink test was skipped because creating
+the link was unavailable; that runtime path remains NOT VERIFIED locally.
+
+## Earlier Release Evidence
+
+Local version 0.3.0 executable checks were refreshed on 2026-10-08.
 Earlier forward runs remain attributed to versions 0.1.0 and 0.2.0 below.
 
 The executable checks cover skill discovery metadata, distributed references,

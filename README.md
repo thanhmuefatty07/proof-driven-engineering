@@ -17,6 +17,9 @@ agents. One portable skill, with focused references loaded only when needed.
 - Reconcile ambiguous tool writes, diagnose errors, and verify actual resulting state.
 - Omit narrating comments and speculative scaffolding; retain necessary invariants/licenses.
 - Require evidence before completion, performance, or security claims.
+- Design realistic tests that reject a named defect using an independent oracle.
+- Bound test artifacts, reuse compatible caches, and verify owned-data cleanup.
+- Close milestones with one concise private checkpoint and explicit evidence limits.
 
 A skill supplies instructions. It cannot guarantee optimal code, eliminate all
 defects, grant tool permissions, or force a model to obey. Automated project gates
@@ -72,7 +75,7 @@ full skill. This repository does not automatically edit host rules or settings.
 skills/proof-driven-engineering/
   SKILL.md
   agents/openai.yaml
-  references/                 Architecture, security, dependency grounding, continuity, verification
+  references/                 Architecture, security, dependency grounding, test quality, continuity, verification
   scripts/check_evidence.py    Optional recorded-coverage/freshness gate
 evals/                        Synthetic behavioral prompts and fixtures
 tests/                        Package and evidence-gate checks
