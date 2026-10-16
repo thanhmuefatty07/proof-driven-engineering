@@ -117,6 +117,14 @@ closure. Broaden for changed shared boundaries, discovered failures, or unresolv
 risk. Do not rerun a full suite after every edit or run unchanged checks until
 green. Retest evidence invalidated by changed inputs; complete mandatory gates.
 
+Before running tests, resolve the supported runtime from project metadata,
+lockfiles, toolchain pins, and CI. Prefer the repository's locked runner and
+verify the actual version selected by the process; a bare executable on PATH can
+silently choose an incompatible runtime. If an alternate runtime is deliberately
+tested for compatibility, label that scope separately. Collection or syntax
+failure under an unsupported runtime is environment evidence, not a product
+regression or proof that the behavioral test is sensitive.
+
 For a consequential check, retain its command, working directory, input revision
 or hashes, runtime/platform, selected scope, actual exit status, meaningful
 counts, and decisive output. Observe completion; launching a job is not a pass.
