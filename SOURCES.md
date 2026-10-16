@@ -22,6 +22,9 @@ not a ranking of the world's best skills. Popularity was used only for discovery
 | [pip index-source warning](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-extra-index-url) | Treat private/public index substitution as a dependency-confusion boundary | No automatic registry rewrites |
 | [npm lockfile reference, v11](https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json/) | Check resolved artifact identity, version, integrity, and installation-script metadata | npm-specific fields require the matching CLI/lockfile format |
 | [Python hashlib reference, 3.11](https://docs.python.org/3.11/library/hashlib.html) | Version-matched API and digest behavior for the synthetic grounding eval | The local runtime must still be inspected; later patch-level docs are not exact-binary evidence |
+| [Google Testing Blog: Mutation Testing (2021)](https://testing.googleblog.com/2021/04/mutation-testing.html) | Use actionable, behavior-changing mutants and suppress noisy or redundant findings | One internal service report; tool policy and reported rates do not generalize to every project |
+| [Google Testing Blog: Increase Test Fidelity By Avoiding Mocks (2024)](https://testing.googleblog.com/2024/02/increase-test-fidelity-by-avoiding-mocks.html) | Prefer real or behaviorally faithful dependencies when they remain practical | Fidelity can increase cost; preserve appropriate test-size and determinism limits |
+| [Google Testing Blog: Keep Tests Focused (2018)](https://testing.googleblog.com/2018/06/testing-on-toilet-keep-tests-focused.html) | Give each independently failing scenario a clear assertion and name | Multi-step integration journeys can still form one scenario |
 
 ## Chosen approach
 
@@ -30,7 +33,11 @@ The 0.4.0 test lifecycle sources below were reviewed on 2026-10-16. The update u
 and [fixture teardown guide](https://docs.pytest.org/en/stable/how-to/fixtures.html#teardown-cleanup-aka-fixture-finalization).
 They inform ownership, retention and teardown decisions, including the danger of
 reusing an explicit base temporary directory. Actual runner versions and cleanup
-behavior must still be verified. The
+behavior must still be verified. Mutation guidance reviewed for 0.4.2 treats
+mutation runs as targeted sensitivity checks, not stand-alone acceptance scores;
+mutants that are equivalent, redundant, or disconnected from observable behavior
+must not drive brittle test additions. The sources describe practical heuristics,
+not guarantees that agents will follow them. The
 [official Codex instruction guide](https://developers.openai.com/codex/guides/agents-md)
 informs optional host integration; editing a skill does not itself change global
 instructions or enforce a filesystem quota.
