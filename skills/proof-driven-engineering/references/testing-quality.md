@@ -125,6 +125,24 @@ tests, an all-skipped target, a timeout, or a pipeline hiding the runner's failu
 cannot satisfy a behavioral gate. Expected negative-control failures are recorded
 as such, separately from acceptance passes.
 
+Treat runner output as a claim from the process that produced it. The exit code
+and stdout captured by the host show what the host observed; a JUnit or JSON
+report shows what the runner wrote. A hash can show that those bytes stayed the
+same after capture, but neither a hash nor a self-consistent report proves that
+the intended test cases executed or asserted the intended behavior. Project-
+controlled pytest plugins, conftest.py, wrappers, or tests can alter collection,
+suppress execution, or rewrite a report before the runner reads it.
+
+For ordinary correctness checks, inspect the actual command, selected test IDs,
+executed/skipped/error counts, decisive assertions, and host-observed exit code;
+review the test and its oracle against the contract. State that the workspace
+and runner are trusted when that assumption matters. If claiming resistance to
+project-controlled tampering, require an independently controlled observer and
+an OS-level boundary that prevents test code from changing the observer or its
+evidence, then verify that boundary. Without it, report authenticity as
+NOT VERIFIED; do not treat a receipt, report parser, hash, or test-generated log
+as independent proof.
+
 Separate unit, integration, end-to-end, static, and manual evidence. Do not report
 unrun checks, stale output, generated receipts, self-review, or mock-only tests as
 real execution. A check unavailable locally stays `NOT VERIFIED` with its reason
