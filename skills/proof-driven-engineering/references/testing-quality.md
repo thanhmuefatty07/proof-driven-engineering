@@ -61,6 +61,29 @@ boundary, failure, or recovery cases to make a suite smaller or faster. Report
 material consolidation with the removed check, its former coverage, the retained
 check that now supplies that evidence, and any verification limit.
 
+## Use mutation as a targeted sensitivity check
+
+Mutation testing is an optional diagnostic, not a standalone quality measure or
+a required step for every change. A mutation score alone is not an acceptance
+target. Use mutation when a material contract has a plausible defect and the
+regression test's ability to reject that defect is uncertain. Choose a
+representative, contract-relevant wrong result or behavior in an isolated copy;
+scope the run to the changed or high-risk code and the tests that can exercise
+it when the runner can select them reliably. Stop when the decisive assertion
+rejects the representative defect. Do not generate broad mutant sets or add one
+test file per mutant to increase counts.
+
+Count a mutant as detected only when the intended behavioral assertion fails.
+Compilation, import, collection, setup, or unrelated test failures show a broken
+mutation run, not a sensitive oracle. Review a surviving mutant before changing
+tests: it may reveal a missing contract case, but it may also be equivalent,
+redundant, irrelevant to externally observable behavior, or require a brittle
+implementation-shaped assertion. Do not add such assertions just to kill a
+mutant or raise a mutation score. Preserve that result as a question or explicit
+verification limit. When a useful mutant reveals a real missing defect class,
+add the smallest case to the owning suite and keep the evidence that it failed
+for the intended reason.
+
 ## Match realism to the claim
 
 Use the smallest real path sufficient to expose the defect. Synthetic data can
@@ -160,5 +183,9 @@ Use actual repository gates and inspect the resulting behavior and artifacts.
 
 ## Primary references
 
+- [Google Testing Blog: Mutation Testing](https://testing.googleblog.com/2021/04/mutation-testing.html)
+- [Google Testing Blog: Increase Test Fidelity By Avoiding Mocks](https://testing.googleblog.com/2024/02/increase-test-fidelity-by-avoiding-mocks.html)
+- [Google Testing Blog: Keep Tests Focused](https://testing.googleblog.com/2018/06/testing-on-toilet-keep-tests-focused.html)
 - [pytest temporary directory ownership and retention](https://docs.pytest.org/en/stable/how-to/tmp_path.html)
 - [pytest fixture teardown and safe cleanup](https://docs.pytest.org/en/stable/how-to/fixtures.html#teardown-cleanup-aka-fixture-finalization)
+
