@@ -3,7 +3,7 @@ name: proof-driven-engineering
 description: Performance-first implementation, debugging, architecture, and code review with verified dependencies/APIs, adversarial security checks, requirement continuity, and measured acceptance. Use for substantive repository changes or optimization; keep trivial edits lightweight.
 license: MIT
 metadata:
-  version: "0.4.2"
+  version: "0.4.3"
 ---
 
 # Proof-Driven Engineering
