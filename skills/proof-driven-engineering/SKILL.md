@@ -3,7 +3,7 @@ name: proof-driven-engineering
 description: Performance-first implementation, debugging, architecture, and code review with verified dependencies/APIs, adversarial security checks, requirement continuity, and measured acceptance. Use for substantive repository changes or optimization; keep trivial edits lightweight.
 license: MIT
 metadata:
-  version: "0.4.3"
+  version: "0.4.4"
 ---
 
 # Proof-Driven Engineering
@@ -47,7 +47,10 @@ is pending; proceed on optional details with a stated reasonable assumption.
 Inspect the working tree and relevant local instructions before editing.
 Preserve existing user changes. Locate the authoritative definition, important
 callers, consumers, tests, and serialized/configuration boundaries. Inspect actual
-dependency/runtime versions when behavior is version-dependent.
+dependency/runtime versions when behavior is version-dependent. For checks,
+resolve the supported runtime from project metadata, lockfiles, toolchain pins,
+and CI; use the repository's approved launcher and confirm the runtime it
+actually selected before interpreting failures.
 
 Never invent packages, import paths, API members, signatures, CLI flags, config
 keys, protocol fields, or platform support. For new, unfamiliar, or version-sensitive
