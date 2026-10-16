@@ -1,5 +1,19 @@
 # Validation Status
 
+## Release 0.4.2: Targeted Mutation Sensitivity
+
+Reviewed on 2026-10-16. This instruction-only update clarifies when mutation
+checks add evidence and how to distinguish a killed mutant from a broken test
+run. It adds no runtime code, test case, or dependency.
+
+| Check | Observed result |
+| --- | --- |
+| Local testing-quality document integrity | Passed: the mutation guidance is present, its relative link resolves, whitespace is clean, and the skill metadata is 0.4.2 |
+| Primary-source review | Three first-party Google Testing Blog pages fetched and reviewed: Mutation Testing (2021), Increase Test Fidelity By Avoiding Mocks (2024), and Keep Tests Focused (2018) |
+| Executable package and catalog suites | Not rerun: this release changes instructions and release notes only; no executable files, tests, or dependencies changed. The 0.4.1 results below are historical evidence for that release, not a fresh 0.4.2 run. |
+
+No consuming-agent evaluation was run for the new mutation guidance. Whether agents consistently apply it remains NOT VERIFIED; the skill cannot mechanically enforce compliance.
+
 ## Release 0.4.1: Evidence-Based Test Portfolio
 
 Checked on 2026-10-16 with Windows and Python 3.11.9. This instruction-only
