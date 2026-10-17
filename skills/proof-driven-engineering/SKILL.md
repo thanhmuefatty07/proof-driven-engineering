@@ -3,7 +3,7 @@ name: proof-driven-engineering
 description: Performance-first implementation, debugging, architecture, and code review with verified dependencies/APIs, adversarial security checks, requirement continuity, and measured acceptance. Use for substantive repository changes or optimization; keep trivial edits lightweight.
 license: MIT
 metadata:
-  version: "0.4.4"
+  version: "0.4.5"
 ---
 
 # Proof-Driven Engineering
@@ -108,8 +108,15 @@ that can detect the relevant mistake. Fixes should leave a regression check when
 feasible. Respect required local testing rules and report unavailable checks.
 Before designing, adding, selecting, removing, or interpreting tests, read
 [testing-quality.md](references/testing-quality.md). Map relevant existing
-coverage first; add only the smallest set that distinguishes uncovered defects,
-and remove tests as redundant only with behavior, boundary, and consumer evidence.
+coverage first. Before editing tests, make a compact case map in task notes:
+requirement, concrete wrong behavior, nearest existing check and exact gap,
+independent oracle, real boundary, decisive assertion, and expected run/artifact
+cost. Add only the smallest set for distinct uncovered defects; extend the owning
+suite and fixtures by default. A new test file needs a separate owner, boundary,
+runner, lifecycle, or CI-selection reason. Stop once required defect classes have
+sensitive checks; report remaining boundaries as `NOT VERIFIED` instead of
+growing a speculative test matrix. Remove tests only with behavior, boundary,
+and consumer evidence.
 Require an independently derived observable result, a credible wrong behavior
 the check rejects, and the real boundary needed for the claim. Test counts,
 source-text assertions, and mocks alone do not establish correctness.
@@ -195,3 +202,4 @@ wins, completeness, security, or production-readiness claims. For implementation
 requests, resolve actionable in-scope failures; for review-only tasks, report
 them. Report remaining blockers honestly. Stop optional investigation
 when it is unlikely to change the result, while completing required verification.
+
