@@ -1,3 +1,14 @@
+## Release 0.4.5: Minimal Discriminating Test Portfolio
+
+Published on 2026-10-17 to branch `codex/test-quality-portfolio-20261016`. This instruction-only update requires a compact task-note case map before adding, removing, or selecting tests: requirement, plausible wrong behavior, nearest existing check and exact gap, independent expected result, exercised boundary, decisive assertion, run/artifact cost, and verification limit. It defaults to the owning suite, requires a concrete distinct owner/boundary/runner/lifecycle/CI-selection reason for a new test file, and sets a stop condition once required defect classes have sensitive checks; inaccessible boundaries remain NOT VERIFIED. No executable code, test case, or dependency changed.
+
+| Check | Observed result |
+| --- | --- |
+| Bundled skill manifest validator | Passed locally on Windows Python 3.14.7 with PyYAML 6.0.3; exit 0 |
+| Local Markdown integrity | 22 relative links resolved; no missing targets or trailing whitespace |
+| Executable suites and consuming-agent evaluation | Not run for this instruction-only update; test quality and agent adoption remain NOT VERIFIED |
+| GitHub CI | No CI result is claimed by this validation record; remote execution remains NOT VERIFIED |
+
 # Validation Status
 
 ## Release 0.4.4: Runtime Selection for Test Evidence
