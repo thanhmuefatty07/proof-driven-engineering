@@ -9,8 +9,9 @@ Preserve mandatory repository gates and all required behavioral boundaries.
 
 For each material requirement, identify:
 
-`requirement -> plausible defect -> independent expected result -> exercised
-boundary -> decisive assertion -> verification limit`.
+`requirement -> plausible defect -> nearest existing check + exact gap ->
+independent expected result -> exercised boundary -> decisive assertion ->
+run/artifact cost -> verification limit`.
 
 Derive expectations from the contract, trusted examples, protocol, or an
 independent reference. Do not copy the implementation into the oracle, generate
@@ -20,11 +21,23 @@ visible effects, and required absence of effects where relevant. A success flag,
 mock call count, file existence, or source-text match alone is insufficient for a
 behavioral claim; structural checks remain useful for actual structural rules.
 
-Before adding a case, inspect existing tests and name the missing defect class it
-will detect. Reuse or extend the owning suite. Parameterize meaningful partitions;
-do not make separate files for equivalent examples, multiply arbitrary inputs,
-or generate a Cartesian product without a contract or failure model requiring it.
-Do not add tests for reversible prose or mechanical edits merely to raise counts.
+Before editing tests, make this compact map in task notes; do not create a
+separate plan or evidence file for each case by default. Name the closest existing
+check and the exact behavior or boundary it fails to establish. Reject a proposed
+case when that check already rejects the same plausible defect at the required
+boundary, or when its only distinction is a method, branch, mock call, or
+arbitrary input value with no separate contract partition. Reuse or extend the
+owning suite and fixtures. A new test file needs a distinct owner, boundary,
+runner, fixture lifecycle, or CI-selection need.
+
+Keep one scenario and one clear failure signal per test. A real end-to-end user
+journey or state transition may require several calls in one scenario; split
+checks when one failure would mask another or when they exercise different
+owners, boundaries, setup/lifecycle rules, or recovery paths. Parameterize only
+contract partitions that share the same invariant and oracle. Do not make
+separate files for equivalent examples, multiply arbitrary inputs, or generate
+a Cartesian product without a contract or failure model requiring it. Do not add
+tests for reversible prose or mechanical edits merely to raise counts.
 
 For a regression, observe the intended behavioral failure against the known bad
 behavior, then the pass after the fix. An import, collection, syntax, environment,
@@ -45,6 +58,12 @@ boundaries, setup/lifecycle rules, or recovery paths. Do not create one test fil
 or case per requirement, branch, or input value. Extend the owning suite by
 default. A new file needs a concrete reason, such as a distinct owner, runner
 setup, or fixture lifecycle.
+
+Set the stop condition before implementation: each required defect class must
+already have a check with the needed boundary or receive one minimal sensitive
+case. Stop when those obligations are met. If an important boundary cannot be
+exercised safely or locally, record it as `NOT VERIFIED`; speculative extra cases
+do not close that evidence gap.
 
 Names, source-code similarity, shared fixture values, and line-coverage overlap
 do not prove behavioral redundancy. Consolidate or delete a test only after
@@ -214,3 +233,4 @@ Use actual repository gates and inspect the resulting behavior and artifacts.
 - [Google Testing Blog: Keep Tests Focused](https://testing.googleblog.com/2018/06/testing-on-toilet-keep-tests-focused.html)
 - [pytest temporary directory ownership and retention](https://docs.pytest.org/en/stable/how-to/tmp_path.html)
 - [pytest fixture teardown and safe cleanup](https://docs.pytest.org/en/stable/how-to/fixtures.html#teardown-cleanup-aka-fixture-finalization)
+
