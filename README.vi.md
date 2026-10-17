@@ -28,18 +28,20 @@ Hỏi agent status trong lúc làm không được làm mất nhiệm vụ gốc
 cũ phải được xem lại khi input thay đổi. Tool timeout sau một thao tác ghi phải
 được đối chiếu trạng thái trước khi thử lại.
 
-Từ phiên bản 0.4.2, [hướng dẫn kiểm thử](skills/proof-driven-engineering/references/testing-quality.md)
+Từ phiên bản 0.4.4, [hướng dẫn kiểm thử](skills/proof-driven-engineering/references/testing-quality.md)
 yêu cầu mỗi kiểm thử nhắm vào lỗi cụ thể, có kết quả kỳ vọng độc lập và đi qua
-ranh giới thực phù hợp với kết luận. Agent phải dùng lại coverage có ích, kiểm
-chứng test bắt được hành vi sai, báo trung thực phần chưa chạy và hoàn thành
-các gate bắt buộc. Số lượng test hoặc test chỉ kiểm tra mock không chứng minh
-được chất lượng sản phẩm. Phiên bản 0.4.2 chỉ cho phép hợp nhất hoặc xóa test
-khi có bằng chứng về contract, oracle, ranh giới thực và consumer; tên hoặc mã
-giống nhau không đủ để kết luận test trùng lặp.
-Mutation chỉ dùng như phép thử độ nhạy có mục tiêu: không đặt mutation score thành
-ngưỡng nghiệm thu, không sinh mutant hàng loạt; lỗi build, import hoặc collection
-không chứng minh test đã phát hiện lỗi hành vi. Mutant tương đương hoặc không liên
-quan tới contract không phải lý do để thêm test bám vào chi tiết triển khai.
+ranh giới thực phù hợp với kết luận. Agent phải dùng lại coverage có ích, chọn
+tập kiểm thử nhỏ nhất phân biệt các lỗi cần bắt, và chỉ gộp/xóa test khi giữ
+nguyên contract, oracle, ranh giới, tín hiệu lỗi và consumer. Số lượng test,
+coverage hoặc mock call tự chúng không chứng minh chất lượng hành vi.
+Mutation chỉ là phép thử độ nhạy có mục tiêu: không đặt mutation score làm
+ngưỡng nghiệm thu, không sinh mutant hàng loạt; lỗi build/import/collection
+không chứng minh đã phát hiện lỗi hành vi. Mutant tương đương hoặc ngoài
+contract không phải lý do để thêm assertion bám vào chi tiết triển khai.
+Kết quả runner cần được đối chiếu với node ID, assertion, exit code và runtime
+đã chọn thực tế. Hash bảo toàn byte sau khi thu thập nhưng không chứng minh test
+đã chạy; tuyên bố chống sửa kết quả cần observer độc lập cùng ranh giới OS, nếu
+thiếu phải ghi rõ NOT VERIFIED.
 
 Trước khi sinh dữ liệu, agent phải xác định nơi tạm, mức phát sinh dự kiến,
 dung lượng còn trống, chủ sở hữu và cách thu dọn. Cache build tương thích được
