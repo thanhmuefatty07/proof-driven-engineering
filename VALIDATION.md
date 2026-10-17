@@ -1,5 +1,26 @@
 # Validation Status
 
+## Release 0.4.4: Runtime Selection for Test Evidence
+
+Reviewed on 2026-10-17 from branch commit 9b0e583c4465c34668f5e3682abbcf950432cd25. This instruction-only update requires resolving the supported runtime from project metadata, lockfiles, toolchain pins, and CI, then verifying the runtime selected by the approved runner. It also distinguishes unsupported-runtime collection or syntax errors from product regressions. No executable code, test case, or dependency changed in the 0.4.4 commits.
+
+| Check | Observed result |
+| --- | --- |
+| Distributed skill metadata and runtime guidance | Inspected on the published branch: metadata is 0.4.4 and the runtime-selection rule is present in both the core skill and testing-quality reference |
+| GitHub status checks | No checks were returned for branch HEAD 9b0e583c4465c34668f5e3682abbcf950432cd25; remote CI remains NOT VERIFIED |
+| Executable suites and consuming-agent evaluation | Not run in this validation update; agent adoption and runtime behavior across projects remain NOT VERIFIED |
+
+## Release 0.4.3: Test-Runner Evidence Trust Limits
+
+Reviewed on 2026-10-17 from commits 06abd17a6c3046762de4f1c76f3b3131b5588ac1 and 4a3f1bdf6d6a276a5701e2e9c55162694236c037. This instruction-only update clarifies that runner output, reports, and hashes are evidence from a process, not independent proof that intended tests executed. It requires inspecting selected IDs, decisive assertions and host-observed exit status for ordinary checks; anti-tamper claims require an independent observer protected by an OS boundary. It adds no executable code, test case, or dependency.
+
+| Check | Observed result |
+| --- | --- |
+| Published reference content | Inspected on the branch; trust limits and the 0.4.3 skill metadata are present |
+| Executable suites and consuming-agent evaluation | Not run in this validation update; no new behavioral or anti-tamper result is claimed |
+| Remote CI status | The later 0.4.4 branch HEAD has no reported status checks; CI for these releases remains NOT VERIFIED |
+
+
 ## Release 0.4.2: Targeted Mutation Sensitivity
 
 Reviewed on 2026-10-16. This instruction-only update clarifies when mutation
