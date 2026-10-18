@@ -1,6 +1,6 @@
 interface:
   display_name: "Proof-Driven Engineering"
-  short_description: "Measured engineering with realistic, bounded testing"
-  default_prompt: "Use $proof-driven-engineering to complete this change with realistic discriminating tests, bounded artifacts, measured performance, and current acceptance evidence."
+  short_description: "Outcome-first architecture and measured engineering"
+  default_prompt: "Use $proof-driven-engineering to achieve the requested outcome, trace the affected system, select measured improvements, diagnose before expanding tests, and verify the result without unproductive loops."
 policy:
   allow_implicit_invocation: true

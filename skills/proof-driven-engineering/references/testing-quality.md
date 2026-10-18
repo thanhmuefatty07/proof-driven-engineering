@@ -5,12 +5,23 @@ tests. The objective is evidence that rejects plausible defects in the requested
 behavior. More tests, files, coverage, or repetitions are not acceptance criteria.
 Preserve mandatory repository gates and all required behavioral boundaries.
 
+## Diagnose before expanding tests
+
+When a check fails, inspect the first meaningful failure, actual inputs, owning
+path, and violated invariant before adding cases. Use a narrow trace, minimal
+reproducer, or discriminating experiment to distinguish plausible causes. Fix
+the causal owner and inspect sibling paths sharing that invariant. Add a test
+only for a demonstrated coverage gap, not to compensate for an unexplained cause.
+If another run or case adds no evidence, use the progress gate in
+[continuity-tools.md](continuity-tools.md) instead of multiplying files or inputs.
+
 ## Define a discriminating check
 
 For each material requirement, identify:
 
-`requirement -> plausible defect -> independent expected result -> exercised
-boundary -> decisive assertion -> verification limit`.
+`requirement -> plausible defect -> nearest existing check + exact gap ->
+independent expected result -> exercised boundary -> decisive assertion ->
+run/artifact cost -> verification limit`.
 
 Derive expectations from the contract, trusted examples, protocol, or an
 independent reference. Do not copy the implementation into the oracle, generate
@@ -20,11 +31,23 @@ visible effects, and required absence of effects where relevant. A success flag,
 mock call count, file existence, or source-text match alone is insufficient for a
 behavioral claim; structural checks remain useful for actual structural rules.
 
-Before adding a case, inspect existing tests and name the missing defect class it
-will detect. Reuse or extend the owning suite. Parameterize meaningful partitions;
-do not make separate files for equivalent examples, multiply arbitrary inputs,
-or generate a Cartesian product without a contract or failure model requiring it.
-Do not add tests for reversible prose or mechanical edits merely to raise counts.
+Before editing tests, make this compact map in task notes; do not create a
+separate plan or evidence file for each case by default. Name the closest existing
+check and the exact behavior or boundary it fails to establish. Reject a proposed
+case when that check already rejects the same plausible defect at the required
+boundary, or when its only distinction is a method, branch, mock call, or
+arbitrary input value with no separate contract partition. Reuse or extend the
+owning suite and fixtures. A new test file needs a distinct owner, boundary,
+runner, fixture lifecycle, or CI-selection need.
+
+Keep one scenario and one clear failure signal per test. A real end-to-end user
+journey or state transition may require several calls in one scenario; split
+checks when one failure would mask another or when they exercise different
+owners, boundaries, setup/lifecycle rules, or recovery paths. Parameterize only
+contract partitions that share the same invariant and oracle. Do not make
+separate files for equivalent examples, multiply arbitrary inputs, or generate
+a Cartesian product without a contract or failure model requiring it. Do not add
+tests for reversible prose or mechanical edits merely to raise counts.
 
 For a regression, observe the intended behavioral failure against the known bad
 behavior, then the pass after the fix. An import, collection, syntax, environment,
@@ -33,6 +56,62 @@ When practical, challenge an important oracle with a controlled wrong result or
 minimal mutation in an isolated copy. Never rewind dirty user work, weaken a live
 system, or keep a mutated implementation. If this cannot be done safely, describe
 the missing sensitivity evidence rather than inventing a red/green history.
+
+## Keep the test portfolio focused
+
+Before adding or removing tests, map the relevant existing checks to their
+contract, plausible defect, independent oracle, exercised boundary, and decisive
+assertion. Add the smallest set that covers each distinct defect class and each
+interaction required by the failure model. Combine cases when one run can make
+clear independent assertions; separate them when they exercise different owners,
+boundaries, setup/lifecycle rules, or recovery paths. Do not create one test file
+or case per requirement, branch, or input value. Extend the owning suite by
+default. A new file needs a concrete reason, such as a distinct owner, runner
+setup, or fixture lifecycle.
+
+Set the stop condition before implementation: each required defect class must
+already have a check with the needed boundary or receive one minimal sensitive
+case. Stop when those obligations are met. If an important boundary cannot be
+exercised safely or locally, record it as `NOT VERIFIED`; speculative extra cases
+do not close that evidence gap.
+
+Names, source-code similarity, shared fixture values, and line-coverage overlap
+do not prove behavioral redundancy. Consolidate or delete a test only after
+confirming that the surviving check preserves the same contract, oracle,
+boundary, and failure signal; that the removed test contributes no independent
+assertion or failure mode; and that no discovery rule, CI job, manifest, or
+document relies on it. Where practical, verify that the surviving check still
+rejects a representative wrong behavior. Preserve a test when it protects a
+distinct behavior or boundary. If equivalence or consumer impact is uncertain,
+keep it and report the unresolved review instead of deleting speculatively.
+
+Do not set arbitrary test-count or file-count targets. Do not delete valid
+boundary, failure, or recovery cases to make a suite smaller or faster. Report
+material consolidation with the removed check, its former coverage, the retained
+check that now supplies that evidence, and any verification limit.
+
+## Use mutation as a targeted sensitivity check
+
+Mutation testing is an optional diagnostic, not a standalone quality measure or
+a required step for every change. A mutation score alone is not an acceptance
+target. Use mutation when a material contract has a plausible defect and the
+regression test's ability to reject that defect is uncertain. Choose a
+representative, contract-relevant wrong result or behavior in an isolated copy;
+scope the run to the changed or high-risk code and the tests that can exercise
+it when the runner can select them reliably. Stop when the decisive assertion
+rejects the representative defect. Do not generate broad mutant sets or add one
+test file per mutant to increase counts.
+
+Count a mutant as detected only when the intended behavioral assertion fails.
+Compilation, import, collection, setup, or unrelated test failures show a broken
+mutation run, not a sensitive oracle. Review a surviving mutant before changing
+tests: it may reveal a missing contract case, but it may also be equivalent,
+redundant, irrelevant to externally observable behavior, or require a brittle
+implementation-shaped assertion. Do not add such assertions just to kill a
+mutant or raise a mutation score. Preserve that result as a question or explicit
+verification limit. When a useful mutant reveals a real missing defect class,
+add the smallest case to the owning suite and keep the evidence that it failed
+for the intended reason.
 
 ## Match realism to the claim
 
@@ -67,6 +146,14 @@ closure. Broaden for changed shared boundaries, discovered failures, or unresolv
 risk. Do not rerun a full suite after every edit or run unchanged checks until
 green. Retest evidence invalidated by changed inputs; complete mandatory gates.
 
+Before running tests, resolve the supported runtime from project metadata,
+lockfiles, toolchain pins, and CI. Prefer the repository's locked runner and
+verify the actual version selected by the process; a bare executable on PATH can
+silently choose an incompatible runtime. If an alternate runtime is deliberately
+tested for compatibility, label that scope separately. Collection or syntax
+failure under an unsupported runtime is environment evidence, not a product
+regression or proof that the behavioral test is sensitive.
+
 For a consequential check, retain its command, working directory, input revision
 or hashes, runtime/platform, selected scope, actual exit status, meaningful
 counts, and decisive output. Observe completion; launching a job is not a pass.
@@ -74,6 +161,24 @@ Inspect collection and execution errors, skips/xfails and warnings. Zero execute
 tests, an all-skipped target, a timeout, or a pipeline hiding the runner's failure
 cannot satisfy a behavioral gate. Expected negative-control failures are recorded
 as such, separately from acceptance passes.
+
+Treat runner output as a claim from the process that produced it. The exit code
+and stdout captured by the host show what the host observed; a JUnit or JSON
+report shows what the runner wrote. A hash can show that those bytes stayed the
+same after capture, but neither a hash nor a self-consistent report proves that
+the intended test cases executed or asserted the intended behavior. Project-
+controlled pytest plugins, conftest.py, wrappers, or tests can alter collection,
+suppress execution, or rewrite a report before the runner reads it.
+
+For ordinary correctness checks, inspect the actual command, selected test IDs,
+executed/skipped/error counts, decisive assertions, and host-observed exit code;
+review the test and its oracle against the contract. State that the workspace
+and runner are trusted when that assumption matters. If claiming resistance to
+project-controlled tampering, require an independently controlled observer and
+an OS-level boundary that prevents test code from changing the observer or its
+evidence, then verify that boundary. Without it, report authenticity as
+NOT VERIFIED; do not treat a receipt, report parser, hash, or test-generated log
+as independent proof.
 
 Separate unit, integration, end-to-end, static, and manual evidence. Do not report
 unrun checks, stale output, generated receipts, self-review, or mock-only tests as
@@ -133,5 +238,8 @@ Use actual repository gates and inspect the resulting behavior and artifacts.
 
 ## Primary references
 
+- [Google Testing Blog: Mutation Testing](https://testing.googleblog.com/2021/04/mutation-testing.html)
+- [Google Testing Blog: Increase Test Fidelity By Avoiding Mocks](https://testing.googleblog.com/2024/02/increase-test-fidelity-by-avoiding-mocks.html)
+- [Google Testing Blog: Keep Tests Focused](https://testing.googleblog.com/2018/06/testing-on-toilet-keep-tests-focused.html)
 - [pytest temporary directory ownership and retention](https://docs.pytest.org/en/stable/how-to/tmp_path.html)
 - [pytest fixture teardown and safe cleanup](https://docs.pytest.org/en/stable/how-to/fixtures.html#teardown-cleanup-aka-fixture-finalization)

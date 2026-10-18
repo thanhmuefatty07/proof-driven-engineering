@@ -8,7 +8,9 @@ examples. Package/unit checks and behavioral agent runs assess different things.
 
 1. Create a unique ignored `.local/evals/<run-id>/<case>` workspace. Copy only the
    selected fixture and the skill; do not use private project code or credentials.
-2. Give an independent agent the case prompt, skill location, minimum raw inputs,
+2. Apply a case's optional evaluator-only `setup` to the isolated fixture, never
+   the canonical files. Keep that setup and the grading rubric out of the agent's
+   task. Give an independent agent the case prompt, skill location, minimum raw inputs,
    allowed effects, ownership, and output location. Do not reveal the expected
    finding or solution. Keep grader rubrics separate from the agent task.
 3. Observe actual tool calls and resulting artifacts. Run the behavioral oracle
@@ -51,6 +53,15 @@ identity, real payment, or real secret is involved. Do not deploy these fixtures
 The dependency oracle verifies behavior, not whether API documentation was read
 or a package was installed. Inspect the actual tool trace and isolated diff for
 those process/scope requirements. Missing network evidence must stay explicit.
+
+The `diagnosis-before-test-growth` setup creates a controlled first-match defect
+in the existing catalog fixture. Its existing result/identity assertions should
+fail before the consuming agent's repair, then pass without assertion weakening.
+Inspect the actual diff and any claimed test gap; no added test file is required.
+The exhausted-review-budget case supplies known round state and an unresolved
+blocker. Inspect actions, not just the final answer: another broad worker/tool
+pass or approval is a failure. It requires no live PR, external write, or new
+fixture. Specifying these scenarios does not mean they have been run on an agent.
 
 ## Compare fairly
 

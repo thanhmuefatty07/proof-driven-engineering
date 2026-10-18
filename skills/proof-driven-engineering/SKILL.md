@@ -3,7 +3,7 @@ name: proof-driven-engineering
 description: Performance-first implementation, debugging, architecture, and code review with verified dependencies/APIs, adversarial security checks, requirement continuity, and measured acceptance. Use for substantive repository changes or optimization; keep trivial edits lightweight.
 license: MIT
 metadata:
-  version: "0.4.0"
+  version: "0.5.0"
 ---
 
 # Proof-Driven Engineering
@@ -29,6 +29,9 @@ scope/ownership | current inputs | evidence | unresolved issues | next action`.
 Keep concrete requirements individually traceable to acceptance evidence. Keep
 the original objective during status questions and compatible user steering;
 replace it only when the user cancels or requests an incompatible outcome.
+Separate the requested outcome and hard constraints from suggested implementation
+steps. Choose the method freely within that contract and authorization; do not
+substitute an easier deliverable, preferred architecture, or unrelated cleanup.
 Update the contract on new instructions, consequential decisions, failure, and
 before a context handoff. Read [continuity-tools.md](references/continuity-tools.md)
 for long tasks, interrupted work, external writes, or unreliable tools.
@@ -42,12 +45,18 @@ messages and actual files before the next edit or final answer. Missing context
 is an unknown, not authorization. Do useful independent work while clarification
 is pending; proceed on optional details with a stated reasonable assumption.
 
-## 2. Find the owner and define success
+## 2. Understand the system and define success
 
 Inspect the working tree and relevant local instructions before editing.
 Preserve existing user changes. Locate the authoritative definition, important
-callers, consumers, tests, and serialized/configuration boundaries. Inspect actual
-dependency/runtime versions when behavior is version-dependent.
+callers, consumers, tests, and serialized/configuration boundaries. Build a compact
+system model: entry points, component/data ownership, dependency direction, trust
+and failure boundaries, and the affected end-to-end path. Read authoritative
+architecture guidance and deepen the affected closure; do not mistake one file
+for the whole system or dump the whole repository to appear thorough.
+Inspect actual dependency/runtime versions when behavior is version-dependent.
+For checks, resolve the supported runtime from project metadata, lockfiles,
+toolchain pins, and CI; use the approved launcher and confirm what it selected.
 
 Never invent packages, import paths, API members, signatures, CLI flags, config
 keys, protocol fields, or platform support. For new, unfamiliar, or version-sensitive
@@ -70,7 +79,9 @@ Scale evidence to the change:
 State observable acceptance before implementation. Identify at least one
 credible alternative and a cheap falsifier when the choice is consequential.
 For bugs, reproduce and isolate the violated invariant before changing its causal
-owner. A bug hypothesis must explain the observed failure.
+owner. A bug hypothesis must explain the observed failure. Do not edit from a
+symptom or failed test count alone; trace evidence to the owning cause and check
+other paths sharing that invariant.
 
 ## 3. Choose and build for performance
 
@@ -103,19 +114,23 @@ unrelated modules, or change a language/framework without a required benefit.
 For meaningful behavior changes, establish a test or executable acceptance oracle
 that can detect the relevant mistake. Fixes should leave a regression check when
 feasible. Respect required local testing rules and report unavailable checks.
-Before designing, adding, selecting, or interpreting tests, read
-[testing-quality.md](references/testing-quality.md). Require an independently
-derived observable result, a credible wrong behavior the check rejects, and the
-real boundary needed by the claim. Extend existing coverage before adding tests;
-test counts, source-text assertions, and mocks alone do not establish correctness.
+Before designing, adding, selecting, removing, or interpreting tests, read
+[testing-quality.md](references/testing-quality.md). Map existing coverage, the
+concrete defect, independent oracle, real boundary, and exact gap in task notes.
+Extend the owning suite with the smallest sensitive check; a new file needs a
+distinct owner, boundary, runner, lifecycle, or CI-selection reason. Diagnose
+unexplained failures before expanding tests. Stop adding cases when required
+defect classes are covered; preserve distinct valid cases and mandatory gates.
+Counts, source-text assertions, and mocks alone do not establish behavior.
 Turn critical invariants into types, validation, constraints, or tests at their
 owning boundary instead of relying on future agents to remember them.
 
-Omit comments that narrate code, decorative banners, agent explanations, and
-speculative TODOs. Keep a short comment only when it preserves a non-obvious
-invariant, protocol quirk, security requirement, concurrency rule, compiler
-behavior, cache invalidation rule, or measured trade-off. Preserve required license
-notices and public contract documentation.
+Do not add explanatory inline/block code comments, TODO/FIXME markers, decorative
+banners, or agent notes. Express invariants through code, types, validation, and
+tests; put necessary design rationale in an existing documentation authority.
+Preserve required legal notices, functional directives, public-contract
+documentation, and higher-priority host requirements. Do not delete existing
+comments as unrelated cleanup or hide critical assumptions to satisfy this rule.
 Do not minify or obscure source without a measured deployment/runtime benefit.
 
 ## 4. Attack the assumptions
@@ -155,20 +170,33 @@ post-write state. Diagnose failures and change the method when evidence rejects
 it. A missing tool or permission must remain visible. Never fabricate tool output,
 silently disable checks, retry forever, or exceed authorization to finish.
 
+Before repeating work, name the new evidence or changed condition that makes the
+next attempt useful. If a search, edit, test, review, or agent cycle adds no
+decision-relevant evidence, change the hypothesis, probe, scope, or method now.
+Use the progress gate in [continuity-tools.md](references/continuity-tools.md);
+do not evade a required check by abandoning it or calling a repeat a new task.
+
 A timeout after a write leaves its outcome unknown: inspect the receipt/target
 before retrying. Do not replay a non-idempotent effect blindly. Follow host job
 semantics, use event-driven completion where provided, and avoid status polling
 that adds no decision-relevant evidence. Continue independent work while waiting.
 
 Delegate only when authorized, useful, and supported. Give disjoint ownership,
-minimal relevant context, concrete acceptance, and bounded effects. Review the
-actual artifacts and rerun affected checks before trusting a worker's conclusion.
+minimal relevant context, concrete acceptance, and bounded effects. Keep dependent
+work ordered, reuse a suitable worker instead of spawning duplicates, and retain
+parent responsibility for integration. Review actual artifacts and affected
+checks, not worker votes. Follow the coordination contract in
+[continuity-tools.md](references/continuity-tools.md).
 
 ## 6. Review, verify, and finish
 
 Read [review-verification.md](references/review-verification.md) for formal review,
 contract/critical changes, or disputed verification. A review request is read-only
 unless the user also authorizes fixes.
+For one logical PR, coordinate at most three agent-led review rounds, including
+delegates and specialized tools. Track rounds across revisions and resumptions;
+the [review budget](references/review-verification.md#bounded-pr-review) defines
+verification, escalation, and unresolved blockers. A limit never implies approval.
 
 Map each requirement to current evidence. Run the required affected checks and
 read their results. Invalidate evidence after changes to its inputs. Inspect the

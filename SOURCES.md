@@ -1,6 +1,6 @@
 # Research and Design Decisions
 
-Reviewed on 2026-10-07. Sources were selected for a concrete mechanism, inspectable
+Initial review on 2026-10-07. Sources were selected for a concrete mechanism, inspectable
 primary material, applicability, and evaluability. This is a scoped comparison,
 not a ranking of the world's best skills. Popularity was used only for discovery.
 
@@ -46,6 +46,30 @@ policies and unrelated details. A bundle of many mandatory skills was considered
 but would depend on host discovery and add conflicting process rules. This
 project instead keeps one portable entry point, optional mechanical evidence
 validation, and explicit project integration.
+
+## Outcome and execution policy, 0.5.0
+
+Reviewed on 2026-10-18 using Exa discovery followed by the primary pages below
+and the OpenAI skill-evaluation source already listed above. These are decision
+inputs, not copied instructions or comparative skill scores.
+
+| Primary source | Applied mechanism | Boundary |
+| --- | --- | --- |
+| [SEI software architecture](https://www.sei.cmu.edu/software-architecture/) | Relate system structure and quality attributes to the user's outcome before implementation | Use a task-sized system model, not a mandatory heavyweight architecture exercise |
+| [Google code review standard](https://google.github.io/eng-practices/review/reviewer/standard.html) | Evidence over preferences; resolve review deadlock rather than pursue unattainable perfection | Google does not prescribe this skill's three-round cap |
+| [Google review scope](https://google.github.io/eng-practices/review/reviewer/looking-for.html) | Inspect design, behavior, concurrency and whether test assertions reject broken code | A checklist or clean scan alone is not correctness evidence |
+| [Anthropic effective agents](https://www.anthropic.com/engineering/building-effective-agents) | Match decomposition and tools to the task; use environmental feedback and stopping criteria | The engineering patterns are not evidence for current SDK flags, host permissions, or automatic performance gains |
+| [Google mutation testing](https://testing.googleblog.com/2021/04/mutation-testing.html) | Challenge material assertions with relevant wrong behavior rather than generate redundant mutants | No mandatory mutation-score target or exhaustive mutant matrix |
+| [Google test fidelity](https://testing.googleblog.com/2024/02/increase-test-fidelity-by-avoiding-mocks.html) | Prefer the smallest real boundary that supports the claim; disclose substitutes | This does not authorize production calls or prohibit controlled failure doubles |
+
+The maximum of three coordinated review rounds and the default prohibition on
+generated explanatory code comments are explicit user policy choices, not claims
+that these sources require them. Required legal/functional/contract content and
+higher-priority instructions remain intact. Exhausted review budgets with
+unresolved blockers require handoff, not approval. Existing local 0.4.5 guidance
+on test portfolios, runtime selection, targeted mutation, and evidence authenticity
+is retained. The update makes no claim of globally optimal lines, exhaustive
+diagnosis, or guaranteed model compliance.
 
 ## Attribution and licensing
 

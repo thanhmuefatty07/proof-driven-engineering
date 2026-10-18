@@ -1,5 +1,31 @@
 # Architecture and Performance
 
+## Outcome-first system model
+
+Begin with the user's intended result, observable acceptance, hard constraints,
+and non-goals. Distinguish these from a proposed implementation. Implementation
+freedom does not authorize changing the product, dropping a constraint, widening
+external effects, or pursuing a preferred pattern instead of the outcome.
+
+Build a compact project-level map from authoritative docs, entry points, manifests,
+and relevant code: component responsibilities, dependency direction, data/source
+of truth, public contracts, and trust, failure, and deployment boundaries. Then
+trace the affected request/data path and its producers and consumers in depth.
+Do not claim whole-project understanding from a local read; keep decision-relevant
+unknowns explicit. Unaffected details need not be loaded file by file.
+
+Turn the important quality attributes into scenarios: workload or failure stimulus,
+environment, expected system response, and observable budget/invariant. Consider
+performance alongside required security, availability, consistency, recovery,
+compatibility, and resource limits. Resolve conflicting objectives explicitly.
+
+For a consequential choice, compare the current or simplest sufficient design
+with a credible alternative against those scenarios. Identify the evidence that
+would reject the preferred choice, consequences for consumers, and migration or
+rollback where needed. Select boundaries for domain/data ownership and actual
+failure or scaling needs, not pattern names. Record a significant decision in an
+existing architectural authority; do not create a diagram or ADR for every edit.
+
 ## Define the optimization problem
 
 Name the actual outcome: throughput, latency at a stated percentile, CPU time,
@@ -15,6 +41,12 @@ If faster CPU time causes unacceptable p99 latency or memory, it is not a win.
 Multiple conflicting objectives require a stated trade-off rather than a hidden
 weighted score. Report the fastest candidate tested for this workload; do not
 claim a global optimum.
+
+Keep the best feasible measured candidate, the alternatives tested, uncertainty,
+and remaining limits explicit. Continue exploration only when a concrete supported
+alternative or discriminating probe could materially improve the requested result.
+Stop speculative tuning when no such next step remains; report the fastest tested
+candidate, never that no better line or design could exist.
 
 ## Performance-aware generation
 

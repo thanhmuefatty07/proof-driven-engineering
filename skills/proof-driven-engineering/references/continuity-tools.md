@@ -102,6 +102,24 @@ or replace an unavailable environment without authorization. Use an available
 equivalent when it preserves the requested outcome and verification strength.
 If required checks cannot run, state their names and `NOT VERIFIED - reason`.
 
+## Progress gate: change direction without dropping the outcome
+
+For a repeated step, retain `hypothesis -> discriminating action -> observation ->
+decision`. Compare new evidence with the previous state, not effort spent or
+number of calls. Repeating the same failure, search results, patch/revert cycle,
+test matrix, review opinion, or worker restatement is not progress.
+
+As soon as a cycle supplies no useful evidence, stop that tactic. Inspect the
+first meaningful failure, test a credible rival cause, narrow the probe, consult
+the authoritative contract, or use another verified capability. Another attempt
+needs a changed input/condition or a named new observation. Do not rename the
+task, spawn a fresh agent, or broaden tests merely to repeat the same approach.
+
+Keep valid artifacts and the original acceptance obligations. If no useful
+authorized probe remains, preserve a minimal reproducer, report the exact missing
+gate or decision, and hand off. Stopping a tactic does not make a required check
+optional, and a review budget cannot convert an unresolved risk into a pass.
+
 ## Coordinate without losing ownership
 
 Use agents only when authorized and useful. Each worker receives the objective,
@@ -109,7 +127,23 @@ raw relevant evidence, constraints, exact file ownership, permitted effects,
 acceptance checks, and stop condition. Use isolated workspaces for behavioral
 evaluation. Reviewers receive a realistic task without the expected answer.
 
+Decompose by independently verifiable ownership, not an arbitrary number of
+agents. Keep a small dependency map: independent reads or disjoint changes may
+run concurrently; dependent edits and external mutations remain ordered. Stay
+single-agent when shared context, coordination, or integration would dominate
+the benefit. Use only tools, roles, models, and parameters the host actually
+supports; this document supplies no delegation authorization.
+
+Give a worker the relevant baseline/revision, verified facts versus unknowns,
+required contracts, write exclusions, output artifact, acceptance boundary, and
+resource/stop conditions. Do not forward the entire conversation or grant every
+worker publication rights. One owner integrates shared interfaces; reconcile
+conflicting proposals against the contract and evidence before applying them.
+Reuse a suitable worker for a bounded follow-up instead of launching a duplicate.
+
 Integrate actual diffs and outputs, not confidence or votes. Worker conclusions
 from the same framing/model are correlated. Verify critical findings yourself.
 Keep delegated tasks attached to the parent's original objective and account for
 every pending worker before reporting completion.
+Apply the same progress gate and shared PR review budget to delegated work;
+changing roles or workers must not restart an exhausted loop.

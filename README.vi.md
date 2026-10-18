@@ -1,7 +1,7 @@
 # Proof-Driven Engineering
 
-Skill cho agent lập trình: ưu tiên hiệu năng đo được, kiến trúc phù hợp, kiểm tra
-bảo mật đối kháng và bằng chứng nghiệm thu.
+Skill cho agent làm việc từ mục tiêu và mô hình hệ thống: ưu tiên hiệu năng đo
+được, kiến trúc phù hợp, kiểm tra bảo mật đối kháng và bằng chứng nghiệm thu.
 
 [Hướng dẫn đầy đủ](README.md) | [Nội dung skill](skills/proof-driven-engineering/SKILL.md)
 
@@ -15,8 +15,26 @@ và chỉ kết luận theo bằng chứng đã chạy.
 
 Skill cho phép code và kiến trúc phức tạp khi lợi ích được chứng minh. Nó yêu cầu
 agent tìm nút thắt, so sánh baseline, bảo toàn contract, thử phá các giả định,
-giữ yêu cầu user qua các lần thay đổi và kiểm tra kết quả tool. Comment kể lại
-code được bỏ; chú thích bảo vệ invariant quan trọng và thông tin bản quyền được giữ.
+giữ yêu cầu user qua các lần thay đổi và kiểm tra kết quả tool. Không tự thêm
+comment giải thích, TODO/FIXME hay ghi chú agent vào code. Invariant được thể hiện
+bằng code, kiểu dữ liệu, validation và test; lý do thiết kế nằm trong tài liệu hiện
+có. Thông tin pháp lý, chỉ thị chức năng, tài liệu contract bắt buộc và chỉ dẫn
+cấp cao hơn vẫn được giữ. Không xóa hàng loạt comment cũ ngoài phạm vi nhiệm vụ.
+
+Từ phiên bản 0.5.0, agent phải phân biệt kết quả cần đạt với cách triển khai được
+gợi ý. Trước khi sửa, agent lập mô hình gọn về thành phần, chủ sở hữu dữ liệu,
+dependency, ranh giới tin cậy/lỗi và luồng end-to-end bị ảnh hưởng. Được tự chọn
+cách làm trong ràng buộc, không được tự đổi mục tiêu hay mở rộng quyền hạn.
+
+Một PR logic có tối đa ba lượt review phối hợp, tính chung công cụ và subagent;
+đổi revision, reviewer hoặc chat không làm mới ngân sách. Hết lượt mà còn blocker
+thì phải bàn giao rõ, không tự duyệt hay mở lượt thứ tư. Chạy gate bắt buộc và
+kiểm chứng đúng lỗi đã sửa không đồng nghĩa với mở lại một vòng rà soát rộng.
+
+Vòng lặp không thêm bằng chứng phải đổi giả thuyết, phạm vi hoặc phương pháp
+ngay. Agent chẩn đoán nguyên nhân trước khi sinh thêm test; dùng lại suite đang
+có và chỉ lấp khoảng trống thật. Subagent chỉ dùng khi được phép và có ích, với
+phạm vi sở hữu riêng, đầu vào tối thiểu và kết quả được agent chính kiểm chứng.
 
 Agent không được bịa tên thư viện, import, hàm, tham số, flag, config hoặc khả năng
 hỗ trợ của nền tảng. Trước khi dùng API mới hoặc phụ thuộc phiên bản, phải xác minh

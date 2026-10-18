@@ -1,13 +1,15 @@
 # Proof-Driven Engineering
 
-Performance-first coding, adversarial review, and verifiable acceptance for coding
-agents. One portable skill, with focused references loaded only when needed.
+Outcome-first system design, measured performance, adversarial review, and
+verifiable acceptance for coding agents. One portable skill, with focused
+references loaded only when needed.
 
 [Vietnamese guide](README.vi.md) | [Skill](skills/proof-driven-engineering/SKILL.md) |
 [Research decisions](SOURCES.md) | [Evaluation protocol](evals/README.md)
 
 ## What it changes
 
+- Identify the user's outcome, system boundaries, ownership, and affected end-to-end path before edits.
 - Optimize the measured bottleneck under correctness, security, and resource constraints.
 - Permit complex techniques when comparable measurements justify their benefit.
 - Trace architectural ownership and producer/consumer contracts before changing them.
@@ -15,7 +17,10 @@ agents. One portable skill, with focused references loaded only when needed.
 - Challenge authorization, caches, concurrency, malformed input, and failure recovery.
 - Keep the current user objective and acceptance criteria across steering and compaction.
 - Reconcile ambiguous tool writes, diagnose errors, and verify actual resulting state.
-- Omit narrating comments and speculative scaffolding; retain necessary invariants/licenses.
+- Generate no explanatory code comments or agent markers; preserve mandatory legal, functional, and public-contract content.
+- Change tactic when a loop adds no decision-relevant evidence, without dropping required gates.
+- Delegate only useful independent scopes with explicit ownership and verified integration.
+- Limit one logical PR to three coordinated agent review rounds; unresolved blockers never imply approval.
 - Require evidence before completion, performance, or security claims.
 - Design realistic tests that reject a named defect using an independent oracle.
 - Bound test artifacts, reuse compatible caches, and verify owned-data cleanup.
@@ -23,8 +28,8 @@ agents. One portable skill, with focused references loaded only when needed.
 
 A skill supplies instructions. It cannot guarantee optimal code, eliminate all
 defects, grant tool permissions, or force a model to obey. Automated project gates
-remain essential. This release is an initial evaluated workflow, not a claim of
-superiority over other skills. See [validation status](VALIDATION.md).
+remain essential. Published examples are bounded acceptance evidence, not a claim
+of superiority over other skills. See [validation status](VALIDATION.md).
 
 ## Install in Codex
 

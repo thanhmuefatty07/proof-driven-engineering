@@ -1,5 +1,48 @@
 # Validation Status
 
+## Release 0.5.0: Outcome-First Systems Engineering
+
+Instruction and documentation update on 2026-10-18. The update preserves the
+installed 0.4.5 test-portfolio, runtime-selection, mutation, and evidence-integrity
+guidance, adds outcome-first system modeling, diagnosis before test growth,
+progress-based stopping, coordinated delegation, and a three-round logical-PR
+review budget. It prohibits generated explanatory code comments while preserving
+mandatory legal, functional, public-contract, and higher-priority requirements.
+No executable product code, production test, dependency, or CI workflow changes.
+
+Checked with Windows AMD64, Python 3.11.9 and the pinned PyYAML 6.0.3. The approved
+repository unittest runner used its verified Python 3.11 installation, matching
+the CI 3.11 target; the additional CI 3.13 and Linux targets were not run locally.
+Tests/runner are trusted for these ordinary checks, not independently attested.
+
+| Check | Observed result |
+| --- | --- |
+| `python -B -m unittest discover -s tests -p test_package.py -v` | 5 package/reference checks passed; exit 0 |
+| `python -B -m unittest discover -s tests -v` | 21 discovered: 20 passed, 1 skipped; exit 0 |
+| `python -B -m unittest discover -s evals/fixtures/catalog -v` | Existing 3 contract tests passed; exit 0 |
+| `python -B -m unittest -v` in the isolated catalog control | 3 executed; first-match/duplicate assertion failed with the intended wrong result, 2 passed; expected exit 1 |
+| Same control after restoring only its implementation | All 3 passed; exit 0; existing test file byte-identical |
+| Bundled Codex skill manifest validator | Source and both installed copies valid; exit 0 |
+| Installed distribution comparison | All 9 files match source by SHA-256 in both local copies |
+
+The negative control removed the first-match loop termination in a small isolated
+copy. Its existing assertion rejected extra duplicate records; this was not an
+import, setup, or collection failure. Public fixture and test sources remained
+unchanged; no test method/file or weakened assertion was added. The gate tests'
+owned temporary directory was empty afterward. Two restored synthetic control
+files (1479 bytes total) remain ignored/private because the explicit cleanup
+command was denied before execution. No successful explicit cleanup is claimed;
+no alternate deletion route was attempted. Rollback copies are retained privately.
+The skipped escaping-symlink runtime path is NOT VERIFIED on this Windows host.
+
+The existing acceptance corpus is extended in place with diagnosis-first and
+exhausted-review-budget scenarios. A controlled catalog defect can establish the
+existing assertions' sensitivity, not that a consuming agent diagnoses it or
+obeys the new rules. No new consuming-agent run, paired comparison, cross-platform
+run, live PR/plugin review, native security scan, or independent anti-tamper
+observer is claimed. Exact compiler/runtime optimization remains workload-specific;
+no per-line/global optimum, exhaustive diagnosis, or future compliance is proven.
+
 ## Release 0.4.0: Test Quality and Artifact Lifecycle
 
 Checked on 2026-10-16 with Windows AMD64, Python 3.11.9 and PyYAML 6.0.3.

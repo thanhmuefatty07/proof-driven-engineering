@@ -23,6 +23,30 @@ Report no findings when appropriate, together with the scope/tests and remaining
 limits. Never manufacture findings to sound adversarial. For a fix request,
 resolve the root owner and inspect sibling paths rather than repeating symptoms.
 
+## Bounded PR review
+
+For the same logical PR, use at most three coordinated agent-led review rounds.
+A round is a bounded discovery pass ending in one consolidated findings batch;
+delegate and specialized-tool findings belong to that round, not separate hidden
+budgets. Persist PR identity, reviewed base/head, round number, scope, findings,
+and unresolved evidence in the existing task checkpoint. Reconcile prior records
+before starting another pass; missing history is not evidence of a fresh budget.
+
+Use the first pass for the complete affected scope. Further passes are optional:
+require changed code, a concrete unexamined risk, or new evidence; target the delta
+and its affected contracts. Re-reading an unchanged diff for stylistic perfection
+is not another useful pass. Do not reset the count with a rebase, new head, thread,
+reviewer, tool, role, or a replacement PR for the same logical change.
+
+Rerunning required checks and inspecting the exact fix for an existing finding
+are verification, not permission to restart broad discovery. After the third
+round, stop agent review cycles. Keep unresolved blockers or missing review
+coverage explicit and withhold approval/merge or a readiness claim. Hand off the
+specific decision and evidence to the user or responsible maintainer rather than
+launching a fourth round or silently declaring success. If later edits invalidate
+reviewed contracts, report that gap. The cap limits review repetition, not tests,
+required safety gates, or the obligation to preserve security.
+
 ## Verification that can fail meaningfully
 
 Read [testing-quality.md](testing-quality.md) when selecting or evaluating tests.
