@@ -8,9 +8,14 @@ Preserve mandatory repository gates and all required behavioral boundaries.
 ## Diagnose before expanding tests
 
 When a check fails, inspect the first meaningful failure, actual inputs, owning
-path, and violated invariant before adding cases. Use a narrow trace, minimal
-reproducer, or discriminating experiment to distinguish plausible causes. Fix
-the causal owner and inspect sibling paths sharing that invariant. Add a test
+path, and violated invariant before adding cases. Apply the formal infection
+chain discipline (Zeller, *Why Programs Fail*):
+`Defect (Code) -> Infection (State) -> Failure (Observable)`.
+Patching an observable failure with a local guard or null-check without tracing
+the infection back to the causal defect leaves corrupted state circulating in
+downstream data flows. Use a narrow trace, minimal delta reproducer, or
+discriminating experiment to isolate the component owning the violated invariant.
+Fix the causal owner and inspect sibling paths sharing that invariant. Add a test
 only for a demonstrated coverage gap, not to compensate for an unexplained cause.
 If another run or case adds no evidence, use the progress gate in
 [continuity-tools.md](continuity-tools.md) instead of multiplying files or inputs.
@@ -49,9 +54,12 @@ separate files for equivalent examples, multiply arbitrary inputs, or generate
 a Cartesian product without a contract or failure model requiring it. Do not add
 tests for reversible prose or mechanical edits merely to raise counts.
 
-For a regression, observe the intended behavioral failure against the known bad
-behavior, then the pass after the fix. An import, collection, syntax, environment,
-or unrelated failure does not establish that the regression test is sensitive.
+Establish pre-implementation independent oracles (TDD): empirical studies across
+industrial teams demonstrate a 40% to 90% pre-release defect density reduction
+from test-first oracles (Nagappan et al., EMSE 2008). For a regression or bug fix,
+observe the intended behavioral failure (red) against the known bad behavior before
+implementing the fix (green). An import, collection, syntax, environment, or
+unrelated failure does not establish that the regression test is sensitive.
 When practical, challenge an important oracle with a controlled wrong result or
 minimal mutation in an isolated copy. Never rewind dirty user work, weaken a live
 system, or keep a mutated implementation. If this cannot be done safely, describe
@@ -94,13 +102,26 @@ check that now supplies that evidence, and any verification limit.
 
 Mutation testing is an optional diagnostic, not a standalone quality measure or
 a required step for every change. A mutation score alone is not an acceptance
-target. Use mutation when a material contract has a plausible defect and the
-regression test's ability to reject that defect is uncertain. Choose a
-representative, contract-relevant wrong result or behavior in an isolated copy;
-scope the run to the changed or high-risk code and the tests that can exercise
-it when the runner can select them reliably. Stop when the decisive assertion
-rejects the representative defect. Do not generate broad mutant sets or add one
-test file per mutant to increase counts.
+target. Empirical software engineering demonstrates that mutant detection is
+statistically significantly correlated with real fault detection independently
+of code coverage (Just et al., FSE 2014). However, Just et al. also proved that
+approximately 27% of real faults are uncoupled from simple syntactic mutations
+(e.g., operator swaps or constant tweaks), involving complex multi-variable state
+flows, missing validation, or corrupted lifecycle logic.
+
+Therefore, mutation testing must be complemented with explicit semantic boundary
+test matrices:
+- Zero, null, empty, whitespace, and extrema inputs ($N=0, 1, \text{max}-1, \text{max}$)
+- State reset, invalidation, and teardown consistency
+- Concurrent, interleaved, or out-of-order operations
+
+To avoid mutant explosion and developer fatigue from thousands of redundant or
+equivalent mutants, follow Google's monorepo practice (Petrovic & Ivankovic, ICSE
+2018): restrict mutation testing strictly to AST deltas within the changed code
+and its immediate contracts. Use mutation as an oracle sensitivity discriminator—testing
+whether the suite rejects a plausible defect—rather than pursuing an arbitrary
+100% mutation score. Do not generate broad mutant sets or add one test file per
+mutant to increase counts.
 
 Count a mutant as detected only when the intended behavioral assertion fails.
 Compilation, import, collection, setup, or unrelated test failures show a broken
@@ -243,3 +264,7 @@ Use actual repository gates and inspect the resulting behavior and artifacts.
 - [Google Testing Blog: Keep Tests Focused](https://testing.googleblog.com/2018/06/testing-on-toilet-keep-tests-focused.html)
 - [pytest temporary directory ownership and retention](https://docs.pytest.org/en/stable/how-to/tmp_path.html)
 - [pytest fixture teardown and safe cleanup](https://docs.pytest.org/en/stable/how-to/fixtures.html#teardown-cleanup-aka-fixture-finalization)
+- [Empirical Mutation Testing (Just et al., FSE 2014)](https://homes.cs.washington.edu/~mernst/pubs/mutation-testing-fse2014.pdf)
+- [Google Mutation Testing (Petrovic & Ivankovic, ICSE 2018)](https://testing.googleblog.com/2021/04/mutation-testing.html)
+- [Industrial TDD Defect Study (Nagappan et al., EMSE 2008)](https://www.microsoft.com/en-us/research/publication/realizing-quality-improvement-through-test-driven-development-results-and-experiences-of-four-industrial-teams/)
+- [Why Programs Fail: Systematic Debugging (Zeller, 2009)](https://www.whyprogramsfail.com/)

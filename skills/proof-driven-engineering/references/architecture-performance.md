@@ -66,8 +66,35 @@ candidate. Treat cost estimates as hypotheses, not measurements or speedup claim
 
 Trace `workload -> critical path -> resource cost -> owner -> consumers`.
 Use profiles, traces, query plans, runtime counters, or controlled experiments.
-Consider a rival cause: CPU versus I/O, allocation versus contention, compute
-versus serialization. Choose the measurement that separates them.
+Perform systematic bottleneck triage using Brendan Gregg's **USE Method** (Systems
+Performance, 2020) for every hardware/software resource (CPU, memory, storage I/O,
+network, lock/synchronization):
+- **Utilization:** % of time the resource was busy servicing active work.
+- **Saturation:** Degree of queued work waiting for an overloaded resource.
+- **Errors:** Count and rate of error events on that resource.
+
+For request-driven architectures, complement USE with Tom Wilkie's **RED Method**:
+- **Rate:** Requests serviced per second.
+- **Errors:** Failed requests per second / error percentage.
+- **Duration:** Latency distribution (median, p95, p99 percentiles).
+
+Apply Jon Bentley's **Hierarchy of Optimization** (*Writing Efficient Programs*, 1982)
+in descending order of expected leverage:
+1. **System Architecture & Workload Elimination:** Eliminate unnecessary work;
+   the fastest code is code that never executes.
+2. **Algorithmic Asymptotics:** Reduce complexity class ($O(N^2) \to O(N \log N) \to O(N)$)
+   and design efficient database/index queries.
+3. **Data Layout & Memory Locality:** Improve spatial/temporal cache locality,
+   pre-allocate contiguous buffers, and minimize garbage collection/allocator pressure.
+4. **Code Tuning & Instruction Optimizations:** Unroll loops or tune compiler/native
+   instructions only on confirmed hot paths after higher tiers are exhausted.
+
+Apply the **Roofline Model** (Williams et al., CACM 2009): determine whether the
+critical kernel is memory-bandwidth bound or arithmetic/compute bound. Optimizing
+instructions on a memory-bandwidth-bound algorithm produces zero speedup; focus
+instead on data compaction and cache reuse. On confirmed CPU/memory hot paths,
+pair Roofline with **Top-Down Microarchitecture Analysis (TMAM)** and the full
+mechanical-sympathy handbook in [systems-performance.md](systems-performance.md).
 
 Evaluate in descending expected impact, adapting to measured evidence:
 
@@ -128,16 +155,21 @@ include construction, conversion, cleanup, and amortization costs actually paid
 by the target path. Report what is included rather than silently moving costs.
 
 Warm up JIT/cache paths when representative; measure cold paths separately when
-they matter. Use repeated comparable runs and alternate order when drift matters.
-Report sample count, central tendency, dispersion, and outliers. Do not accept
-a difference indistinguishable from measurement noise as an optimization.
-Include warm-cache and cold-cache costs, build time, allocations, and memory
-when relevant.
+they matter. Control environmental bias (Mytkowicz et al., ASPLOS 2009: thread
+pinning, power/turbo governor, identical flags, identical workload sizes, and
+memory-layout sensitivity). Use repeated interleaved A-B-A-B runs (`N >= 7` for
+consequential claims). Report sample count, central tendency (median), dispersion
+(IQR/MAD), outliers, and nonparametric confidence intervals (optionally validated
+with [compare_bench.py](../scripts/compare_bench.py)). Do not accept a difference
+indistinguishable from measurement noise as an optimization. Include warm-cache
+and cold-cache costs, build time, allocations, and memory when relevant.
 
-For tail claims, use enough samples and an appropriate load generator. Report
-errors/timeouts alongside latency; dropped requests are not a speedup. Keep
-offered versus achieved load explicit and avoid coordinated omission. A
-microbenchmark does not establish end-to-end latency or capacity.
+For tail claims, use enough samples and an open-loop load generator (fixed
+scheduled arrival times `t_sched`, avoiding Gil Tene's coordinated omission).
+Report errors/timeouts/drops alongside latency (`p50/p95/p99/p99.9/max`); dropped
+requests are not a speedup. Keep offered versus achieved load explicit, and sweep
+core counts against **Gunther's Universal Scalability Law (USL)** for concurrent
+services. A microbenchmark does not establish end-to-end latency or capacity.
 Prefer demonstrated end-to-end improvements over isolated microbenchmark wins.
 Accept an optimization only when the relevant gain is established and its
 correctness, security, stability, portability, and resource costs remain feasible.
@@ -150,11 +182,13 @@ comparable nonzero values. Never extrapolate beyond measured conditions.
 
 | Mechanism | Required challenge |
 | --- | --- |
-| Cache | tenant/permission key, invalidation, freshness, eviction, bounded memory, stampede, revocation |
-| Parallelism | dependency/order semantics, cancellation, bounded concurrency, saturation, races |
-| Pool/arena/zero-copy | lifetime, aliasing, initialization, ownership, retention, use-after-free |
-| Native/SIMD/unsafe | target CPU/runtime support, fallback, alignment, bounds, UB, actual generated behavior |
-| Numeric optimization | overflow, precision, rounding, NaN, determinism, contractual equivalence |
+| Cache | Complete mediation: tenant/user/permission cryptographic key binding, invalidation, freshness, eviction, bounded memory, stampede, revocation |
+| Parallelism | dependency/order semantics, cancellation, bounded concurrency, saturation, races, USL multi-core scaling |
+| Lock-free / Atomics / SeqLock | explicit Acquire/Release happens-before proof, weak memory model (ARM64/RISC-V) verification, 128B false-sharing isolation, ABA/reclamation, bounded reader retries, Miri/Loom/TSan |
+| Pool/arena/zero-copy | lifetime, aliasing, initialization, ownership, NUMA first-touch, retention, use-after-free |
+| Native/SIMD/unsafe | target CPU/runtime support, runtime CPUID dispatch + scalar fallback, AVX-512 frequency check, alignment, page-safe tails, UB, scalar differential oracle, generated assembly/IR |
+| I/O / Storage / Kernel bypass | `fsync`/durability honesty, short reads/`EINTR`, alignment (`O_DIRECT`), `mmap` fault/TLB shootdowns, bounded backpressure |
+| Numeric optimization | overflow, precision, rounding, NaN, determinism, hidden libcalls (`__muloti4`), contractual equivalence |
 | Index/materialized state | source of truth, update cost, consistency, rebuild, storage, migration |
 | Retry/asynchrony | idempotency, duplicate effects, deadline, retry budget, ordering, shutdown |
 
@@ -162,3 +196,10 @@ Benchmark authorized bounded workloads. Establish runtime/resource limits and a
 stop condition before expensive load experiments. Stop a failed approach when
 its evidence is decisive; pursue the next supported candidate. Recheck behavior,
 compatibility, negative cases, and end-to-end costs after optimization.
+
+## Primary references
+
+- [Brendan Gregg: Systems Performance & USE Method](https://www.brendangregg.com/usemethod.html)
+- [Jon Bentley: Writing Efficient Programs (1982)](https://dl.acm.org/doi/book/10.5555/578130)
+- [Williams et al.: Roofline Model (CACM 2009)](https://dl.acm.org/doi/10.1145/1498765.1498785)
+- [Extreme Systems Performance Engineering (TMAM, Memory, Lock-Free, SIMD, I/O, Stats)](systems-performance.md)

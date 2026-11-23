@@ -1,6 +1,6 @@
 interface:
   display_name: "Proof-Driven Engineering"
-  short_description: "Outcome-first architecture and measured engineering"
-  default_prompt: "Use $proof-driven-engineering to achieve the requested outcome, trace the affected system, select measured improvements, diagnose before expanding tests, and verify the result without unproductive loops."
+  short_description: "Extreme systems performance and proof-driven engineering"
+  default_prompt: "Use $proof-driven-engineering to achieve the requested outcome with extreme systems performance, mechanical sympathy, adversarial security checks, and verified acceptance evidence."
 policy:
   allow_implicit_invocation: true

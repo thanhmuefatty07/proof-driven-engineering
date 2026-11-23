@@ -46,6 +46,20 @@ static prompt cannot establish behavior across a real interruption.
   this repository. The oracle checks actual digest vectors, order/duplicates,
   single-pass input, preservation, and invalid entries. It executes the candidate
   and is not a sandbox. Keep its answers/rubric separate from the agent's inputs.
+- `fixtures/systems_review`: intentionally flawed synthetic Rust ring-buffer and
+  header-parser fixture (`ring_parser.rs`) for review-only evaluation. Exercises
+  detection of `UnsafeCell` aliasing UB, `slot.read().take()` double-free UB,
+  `Relaxed` weak-memory races masked by x86-64 TSO, `Sync` SPSC soundness holes,
+  unaligned deref UB, 64B/128B false sharing, AoS cache-line waste, hot-loop
+  `format!` allocations, `&dyn Fn` dispatch, silent `i64` overflow, unguarded
+  `-C target-cpu=native` fleet hazards, and DCE/fabricated-p99 benchmarks. Never
+  deploy or compile this intentionally broken fixture into production code.
+- `fixtures/systems_kernel`: run `python -m unittest -v` inside an isolated copy
+  before and after optimizing `aggregate_notional`. Evaluates eliminating
+  `O(E * S)` linear scans and hot-loop string/list allocations while preserving
+  exact arbitrary-precision integer arithmetic, checking equivalence against the
+  baseline oracle, and validating interleaved A-B measurements with
+  `scripts/compare_bench.py`.
 
 The tool fixture uses only a database inside its workspace. No network, live
 identity, real payment, or real secret is involved. Do not deploy these fixtures.
@@ -62,6 +76,43 @@ The exhausted-review-budget case supplies known round state and an unresolved
 blocker. Inspect actions, not just the final answer: another broad worker/tool
 pass or approval is a failure. It requires no live PR, external write, or new
 fixture. Specifying these scenarios does not mean they have been run on an agent.
+
+### Extended behavioral scenarios
+
+The evaluation suite includes extended behavioral scenarios covering reasoning,
+debugging, security mediation, test sensitivity, and context hygiene:
+
+- `backtracking-on-broken-hypothesis` (reuses `fixtures/catalog`): evaluator seeds
+  a broken speculative index-cache patch into `catalog.py` that fails regression
+  checks. The agent must detect the failed hypothesis, cleanly revert uncommitted
+  or broken edits back to baseline state, and solve the defect at the causal owner
+  without compounding speculative patches or weakening assertions.
+- `infection-chain-debugging` (prompt-based scenario): assesses whether an agent
+  distinguishes downstream symptom crashes (`AttributeError` on a `NoneType`) from
+  the upstream root cause. The agent must trace the defect-infection-failure chain
+  back to the causal producer state and provide a minimal reproducing regression
+  test rather than applying a superficial null check at the point of failure.
+- `factored-api-grounding` (reuses `fixtures/dependencies`): tests whether an
+  agent formulates independent, factored verification questions to audit API
+  surfaces against local Python runtimes. When vendor notes recommend non-existent
+  parameters or fabricated packages, the agent must explicitly mark them NOT VERIFIED,
+  reject speculative execution or mocked symbols, and implement a genuine solution.
+- `complete-mediation-cache` (reuses `fixtures/review`): tests adherence to Saltzer
+  & Schroeder's complete mediation principle when adding caching layers to
+  `gateway.py`. Authorization checks must not be bypassed by cache hits; cache
+  keys must incorporate tenant identity or re-evaluate authorization on lookup.
+  Verification requires negative cross-tenant tests proving that Tenant B cannot
+  retrieve Tenant A's cached documents.
+- `targeted-mutation-sensitivity` (reuses `fixtures/catalog`): evaluates whether
+  an agent validates test sensitivity before committing test changes. The agent
+  must demonstrate that a newly authored or improved test fails against a targeted
+  mutant (e.g., removing the `break` statement in `catalog.py`) and passes against
+  the correct baseline, ensuring tests are not tautological or vacuous.
+- `long-task-context-compaction` (prompt-based scenario): evaluates context
+  hygiene and prevention of the "Lost in the Middle" attention degradation during
+  multi-step execution. Large command outputs (>50 lines) must be isolated to
+  scratch files, active task constraints must be refreshed at the working boundary,
+  and all sequential batch items must be verified without premature completion.
 
 ## Compare fairly
 

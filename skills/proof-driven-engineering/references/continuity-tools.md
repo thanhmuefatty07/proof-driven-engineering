@@ -4,8 +4,12 @@
 
 Maintain a small task contract with requirement IDs and current status. Prefer
 host-native state; use an ignored local checkpoint only when persistence is
-needed and the repository permits it. Keep secrets, personal data, private logs,
-and machine-specific paths out of tracked/public files.
+needed and the repository permits it. Long agent sessions suffer from U-shaped
+attention degradation ("Lost in the Middle", Liu et al., TACL 2024), where
+instructions and constraints buried in mid-session conversation history decay.
+To prevent requirement loss, pin and refresh the active task contract at the
+working context boundary after any long sequence of tool executions or interruption.
+Keep secrets, personal data, private logs, and machine-specific paths out of tracked/public files.
 
 ```text
 Objective: the requested outcome
@@ -70,9 +74,11 @@ quoting, literal path APIs, and one shell for filesystem operations. On Windows,
 verify resolved deletion/move targets stay inside the authorized root.
 
 Capture enough results to detect nonzero exit codes, warnings, truncated data,
-pagination, partial completion, and side effects. Filter long output around
-decisive information and retain a private pointer only where permitted. If output
-is incomplete, narrow/fetch missing portions; do not treat silence as success.
+pagination, partial completion, and side effects. Enforce strict log and scratch
+isolation: redirect raw tool output exceeding 50 lines or 2 KB to owned disk
+scratch files. Deliver only the exit code, execution time, and decisive filtered
+error lines into the active LLM context to prevent context pollution (Packer et al., 2023).
+If output is incomplete, narrow/fetch missing portions; do not treat silence as success.
 
 A dependent step starts only after its prerequisite is observed complete. An
 accepted job is not a completed operation. Reacquire UI state/refs after navigation
@@ -108,6 +114,19 @@ For a repeated step, retain `hypothesis -> discriminating action -> observation 
 decision`. Compare new evidence with the previous state, not effort spent or
 number of calls. Repeating the same failure, search results, patch/revert cycle,
 test matrix, review opinion, or worker restatement is not progress.
+
+Apply the **2-Strike Backtracking Invariant** (grounded in Language Agent Tree Search,
+Zhou et al., ICLR 2024): if a proposed patch fails external verification twice, or if
+fixing failure A introduces a regression in a sibling path, do not apply a third
+patch on top. Explicitly revert changes via `git checkout` back to the last clean
+baseline checkpoint before formulating an alternative hypothesis; stop patch thrashing.
+
+Enforce **Extrinsic Feedback Primacy** (Huang et al., ICLR 2024): large language
+models cannot reliably self-correct reasoning intrinsically without external execution
+feedback (compilers, test runners, linters). Introspective claims of correctness
+("I have reviewed this code and verified it is bug-free") are forbidden as evidence.
+Use Reflexion (Shinn et al., NeurIPS 2023): store concise verbal reflections over
+concrete external tool receipts in task memory to prevent cyclic errors.
 
 As soon as a cycle supplies no useful evidence, stop that tactic. Inspect the
 first meaningful failure, test a credible rival cause, narrow the probe, consult
@@ -147,3 +166,10 @@ Keep delegated tasks attached to the parent's original objective and account for
 every pending worker before reporting completion.
 Apply the same progress gate and shared PR review budget to delegated work;
 changing roles or workers must not restart an exhausted loop.
+
+## Primary references
+
+- [Language Agent Tree Search (LATS)](https://arxiv.org/abs/2310.04406)
+- [Limits of Intrinsic Self-Correction in LLMs (Huang et al., 2024)](https://arxiv.org/abs/2310.01798)
+- [Reflexion: Verbal Reinforcement Learning (Shinn et al., 2023)](https://arxiv.org/abs/2303.11366)
+- [Lost in the Middle (Liu et al., TACL 2024)](https://arxiv.org/abs/2307.03172)

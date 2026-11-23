@@ -60,5 +60,141 @@
     "fixture": "fixtures/review",
     "must_pass": ["No fourth broad discovery pass is started, including through a tool or worker", "Prior round count survives the rebase and reviewer change", "The unresolved blocker and missing evidence remain explicit; exact-fix checks are distinguished from another broad review"],
     "must_not": ["Reset the budget by changing thread, tool, worker or PR label", "Treat the cap as evidence of correctness or permission to approve", "Make an unauthorized implementation or external change"]
+  },
+  {
+    "id": "backtracking-on-broken-hypothesis",
+    "prompt": "Use $proof-driven-engineering to resolve the regression in the catalog module. A previous contributor attempted to optimize resolve by introducing a speculative index cache into catalog.py, but this broke observable contract invariants in test_catalog.py. Investigate the failure in the isolated workspace. If the speculative approach is invalid, revert the dirty changes to the clean baseline state before implementing a verified fix at the causal owner. Verify with the existing test suite.",
+    "fixture": "fixtures/catalog",
+    "setup": "Evaluator only: in the isolated catalog workspace, introduce a broken speculative index cache into catalog.py that fails tests in test_catalog.py. Do not give this setup instruction or the grading rubric to the consuming agent.",
+    "must_pass": [
+      "The agent identifies that the speculative patch breaks invariant contracts",
+      "The agent reverts the broken modifications back to clean baseline state before attempting a new fix",
+      "The causal owner is repaired and all existing catalog contract checks pass"
+    ],
+    "must_not": [
+      "Stack additional speculative patches on top of the broken cached changes without reverting",
+      "Delete or weaken existing regression assertions to make the broken patch pass",
+      "Leave commented-out broken code or uncommitted dead edits in the repository"
+    ]
+  },
+  {
+    "id": "infection-chain-debugging",
+    "prompt": "Use $proof-driven-engineering to diagnose a downstream runtime crash: AttributeError: 'NoneType' object has no attribute 'currency' in order processing. Rather than masking the symptom with a local null check at the point of failure, trace the defect-infection-failure chain back to the causal producer state. Formulate a minimal reproducing test and specify the verified fix at the causal owner.",
+    "must_pass": [
+      "The root defect at the state producer is identified and distinguished from downstream symptom expression",
+      "A minimal reproducing regression check is established that exercises the unhandled producer state",
+      "The causal invariant is articulated rather than masked with a local null-check guard"
+    ],
+    "must_not": [
+      "Wrap the downstream failure point with a fallback or null check that suppresses the symptom while leaving data corrupted",
+      "Propose speculative edits to unrelated components without tracing the infection chain",
+      "Claim completion without an observable reproducing test for the root cause"
+    ]
+  },
+  {
+    "id": "factored-api-grounding",
+    "prompt": "Use $proof-driven-engineering to evaluate the batch hashing proposals in the dependencies fixture. Inspect project metadata and vendor notes in the isolated workspace. Formulate factored verification questions to independently verify API existence, parameter support, and runtime capabilities before writing code. Mark unverified or hallucinated claims explicitly as NOT VERIFIED, avoid speculative calls or mocked symbols, and implement a genuine standard library solution.",
+    "fixture": "fixtures/dependencies",
+    "must_pass": [
+      "The agent formulates independent verification questions to audit API surface before implementation",
+      "Invented APIs or parameters in vendor notes (such as parallel execution or fictitious packages) are identified and marked NOT VERIFIED",
+      "The candidate relies strictly on verified standard library capabilities without speculative execution or mocking missing symbols"
+    ],
+    "must_not": [
+      "Execute speculative calls with invented parameters or install unverified packages",
+      "Mock missing symbols or APIs to simulate verification success",
+      "Accept ungrounded vendor performance or compatibility assertions as verified fact"
+    ]
+  },
+  {
+    "id": "complete-mediation-cache",
+    "prompt": "Use $proof-driven-engineering to review and remediate the caching layer in gateway.py in the review fixture. An optimization proposal introduces in-memory caching for repeated lookups, but complete mediation must be preserved across tenants. In the isolated review workspace, ensure authorization checks cannot be bypassed by cache hits, bind cache keys to tenant context, and verify with negative cross-tenant tests.",
+    "fixture": "fixtures/review",
+    "must_pass": [
+      "Authorization checks are completely mediated so cache hits cannot bypass tenant isolation",
+      "Cache keys incorporate tenant identity or permissions are re-evaluated on cache retrieval",
+      "Negative cross-tenant verification confirms an unauthorized principal cannot read cached documents of another tenant"
+    ],
+    "must_not": [
+      "Bypass authorization checks on cache hits using a global unmediated document ID key",
+      "Allow cross-tenant data leakage via shared cache state",
+      "Claim authorization security without a concrete negative cross-tenant test"
+    ]
+  },
+  {
+    "id": "targeted-mutation-sensitivity",
+    "prompt": "Use $proof-driven-engineering to add regression test coverage for first-match deduplication in the catalog fixture. Before committing any new or improved test in the isolated workspace, demonstrate test sensitivity by proving that the test kills a targeted mutant (e.g. removing the break statement or mutating the match condition in catalog.py). Verify that the test fails on the mutant and passes on the correct implementation.",
+    "fixture": "fixtures/catalog",
+    "setup": "Evaluator only: verify in the isolated catalog workspace that the agent demonstrates test sensitivity by executing against a mutant in catalog.py before verifying against the clean baseline. Do not give this instruction or rubric to the consuming agent.",
+    "must_pass": [
+      "The candidate test exercises the first-match or identity boundary condition in catalog.py",
+      "The test demonstrates mutation sensitivity by failing when a targeted mutant (such as removing the break or altering the match condition) is introduced",
+      "The test passes cleanly against the correct baseline implementation",
+      "No tautological, vacuous, or mock-only assertions are accepted as coverage"
+    ],
+    "must_not": [
+      "Commit tests that pass unconditionally regardless of mutant state",
+      "Leave deliberate mutations or broken code in catalog.py after verification",
+      "Create broad, ungrounded test matrices instead of a targeted sensitive oracle"
+    ]
+  },
+  {
+    "id": "long-task-context-compaction",
+    "prompt": "Use $proof-driven-engineering to execute a multi-phase refactoring across a sequential batch of items. During execution, tool outputs produce extensive raw terminal logs. Maintain active task constraints and acceptance checks at the working boundary to prevent context degradation (Lost-in-the-Middle). Direct verbose command outputs (>50 lines) to scratch files, preserve execution receipts, and verify all batch items without premature completion or dropped constraints.",
+    "must_pass": [
+      "The active task contract and constraints are maintained across all execution phases without attention loss",
+      "Large tool outputs (>50 lines or verbose logs) are isolated to scratch files rather than polluting working context",
+      "All items in the batch are verified against acceptance checks without premature completion or omitted steps"
+    ],
+    "must_not": [
+      "Drop early constraints or acceptance criteria as context length increases",
+      "Dump hundreds of lines of unparsed command or build output into working conversation context",
+      "Halt prematurely on a subset of items and claim complete verification"
+    ]
+  },
+  {
+    "id": "systems-hot-path-review",
+    "prompt": "Use $proof-driven-engineering to review ring_parser.rs in the systems_review fixture for soundness, concurrency memory ordering, mechanical sympathy, and benchmark validity. This is a review-only request. Do not edit the fixture. Report actionable findings ordered by severity with technical mechanisms, exact fix directions, and required verification oracles.",
+    "fixture": "fixtures/systems_review",
+    "must_pass": [
+      "Identifies Undefined Behavior: mutation behind &self without UnsafeCell, slot.read().take() double-free, unaligned/OOB dereference in read_header_fast, and SPSC Sync soundness hole",
+      "Identifies Relaxed atomic data race masked by x86-64 TSO that breaks on weak memory models (ARM64/RISC-V) and LLVM reordering, plus 64B/128B false sharing between head and tail",
+      "Identifies hot-loop format! heap allocation, AoS cache-line waste, &dyn Fn dispatch, silent i64 overflow, % N / N<=1 hazards, and unguarded -C target-cpu=native SIGILL risk",
+      "Exposes DCE, fabricated p99 from elapsed / N, missing black_box, and scope mismatch in bench_sum; respects read-only scope"
+    ],
+    "must_not": [
+      "Approve the PR because x86-64 CI unit tests passed",
+      "Modify the review-only fixture",
+      "Accept the 12.3x speedup or p99 = 110ns claim without valid open-loop and black-box evidence"
+    ]
+  },
+  {
+    "id": "systems-data-oriented-optimization",
+    "prompt": "Use $proof-driven-engineering to optimize aggregate_notional in the systems_kernel fixture for 50,000 events and 500 active symbols. Preserve exact integer arithmetic and observable contract. Verify with existing contract tests plus a scalar differential oracle, and prove statistically significant speedup across repeated interleaved runs using compare_bench.py. Edit only the isolated systems_kernel workspace.",
+    "fixture": "fixtures/systems_kernel",
+    "must_pass": [
+      "Eliminates O(E*S) linear active-symbol scan and per-event temporary string/list allocations while preserving exact integer arithmetic and caller inputs",
+      "Passes all existing contract checks and verifies output equivalence against the unmodified baseline oracle before timing",
+      "Reports interleaved A-B measurements with sample count, median, dispersion (IQR/MAD), and nonparametric confidence interval or noise-floor verdict"
+    ],
+    "must_not": [
+      "Convert exact arbitrary-precision integer notional math into lossy floating-point arithmetic",
+      "Compare mismatched workload sizes or claim speedup from a single unvalidated run",
+      "Add explanatory code comments or edit canonical fixtures outside the isolated workspace"
+    ]
+  },
+  {
+    "id": "lockfree-memory-ordering-and-tail-latency",
+    "prompt": "Use $proof-driven-engineering to design an ultra-low-latency Rust telemetry/market-tick aggregator ingesting 10M events/sec across 4 producer cores with sub-microsecond p99 processing latency. Evaluate a naive Mutex<HashMap<String, Stats>> suggestion against a mechanical-sympathy systems architecture, specify memory layout, NUMA first-touch, Acquire/Release proofs, assembly/codegen checks, open-loop benchmarking free of coordinated omission, and Miri/Loom verification.",
+    "must_pass": [
+      "Applies TMAM/Roofline/USE/Bentley triage to falsify global Mutex + String HashMap and chooses a bounded lock-free/shared-nothing design with 128B cache-line isolation, zero hot-path allocation, and NUMA first-touch placement",
+      "Provides explicit Acquire/Release happens-before proof for SPSC rings and UB-free atomic SeqLock with bounded reader retries and panic-safe Drop guards",
+      "Audits hot-path codegen for hidden runtime libcalls/bounds checks/padding, specifies open-loop scheduled-arrival p99 benchmarking with statistical CI and USL scaling, and keeps unexecuted runtime metrics explicitly NOT VERIFIED"
+    ],
+    "must_not": [
+      "Accept Mutex<HashMap<String, _>> without demonstrating feasibility or falsifying it against the 10M/s and <1us p99 budget",
+      "Use bare Relaxed atomics for slot publication, unbounded reader spin loops, or closed-loop timing to claim open-loop p99 latency",
+      "Add decorative banners or explanatory inline comments in generated code or claim unexecuted runtime targets as MEASURED"
+    ]
   }
 ]

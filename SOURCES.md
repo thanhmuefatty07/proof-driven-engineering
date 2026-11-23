@@ -22,6 +22,7 @@ not a ranking of the world's best skills. Popularity was used only for discovery
 | [pip index-source warning](https://pip.pypa.io/en/stable/cli/pip_install/#cmdoption-extra-index-url) | Treat private/public index substitution as a dependency-confusion boundary | No automatic registry rewrites |
 | [npm lockfile reference, v11](https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json/) | Check resolved artifact identity, version, integrity, and installation-script metadata | npm-specific fields require the matching CLI/lockfile format |
 | [Python hashlib reference, 3.11](https://docs.python.org/3.11/library/hashlib.html) | Version-matched API and digest behavior for the synthetic grounding eval | The local runtime must still be inspected; later patch-level docs are not exact-binary evidence |
+| [Google Testing Blog: Keep Tests Focused (2018)](https://testing.googleblog.com/2018/06/testing-on-toilet-keep-tests-focused.html) | Give each independently failing scenario a clear assertion and name | Multi-step integration journeys can still form one scenario |
 
 ## Chosen approach
 
@@ -30,7 +31,11 @@ The 0.4.0 test lifecycle sources below were reviewed on 2026-10-16. The update u
 and [fixture teardown guide](https://docs.pytest.org/en/stable/how-to/fixtures.html#teardown-cleanup-aka-fixture-finalization).
 They inform ownership, retention and teardown decisions, including the danger of
 reusing an explicit base temporary directory. Actual runner versions and cleanup
-behavior must still be verified. The
+behavior must still be verified. Mutation guidance reviewed for 0.4.2 treats
+mutation runs as targeted sensitivity checks, not stand-alone acceptance scores;
+mutants that are equivalent, redundant, or disconnected from observable behavior
+must not drive brittle test additions. The sources describe practical heuristics,
+not guarantees that agents will follow them. The
 [official Codex instruction guide](https://developers.openai.com/codex/guides/agents-md)
 informs optional host integration; editing a skill does not itself change global
 instructions or enforce a filesystem quota.
@@ -70,6 +75,53 @@ unresolved blockers require handoff, not approval. Existing local 0.4.5 guidance
 on test portfolios, runtime selection, targeted mutation, and evidence authenticity
 is retained. The update makes no claim of globally optimal lines, exhaustive
 diagnosis, or guaranteed model compliance.
+
+## Empirical research and reasoning upgrade sources
+
+The following primary sources inform the research-backed upgrade across planning,
+hypothesis-driven debugging, self-verification, dependency grounding, mutation testing,
+performance triage, security mediation, and context preservation.
+
+| Primary source | Applied mechanism | Boundary |
+| --- | --- | --- |
+| [Language Agent Tree Search (LATS)](https://arxiv.org/abs/2310.04406) | Tree-search planning with deliberate backtracking and external environment value functions | MCTS search trees are budgeted for consequential decisions, not low-impact single-line edits |
+| [Limits of Intrinsic Self-Correction in LLMs](https://arxiv.org/abs/2310.01798) | Require extrinsic execution feedback (compilers, test runners, linters); prohibit purely introspective verbal self-correction | External feedback availability depends on tooling; unavailable checks remain NOT VERIFIED |
+| [Reflexion: Verbal Reinforcement Learning](https://arxiv.org/abs/2303.11366) | Verbal reflection over concrete external execution failures stored in task memory to prevent cyclic errors | Reflections must cite observable tool receipts, not internal confidence |
+| [Agentless: Hierarchical Localization](https://arxiv.org/abs/2407.01489) | Hierarchical localization pipeline (Repo -> File -> Function -> Invariant) before code modification | Does not eliminate the need for cross-component integration verification |
+| [Why Programs Fail: Systematic Debugging](https://www.whyprogramsfail.com/) | Infection chain discipline (Defect -> Infection -> Failure) and minimal delta reproducer | A minimal reproducer does not prove absence of other defect modes |
+| [Chain-of-Verification (CoVe)](https://arxiv.org/abs/2309.11495) | Factored verification: generate independent, isolated verification questions to eliminate confirmation bias | Independent questions must target authoritative docs/runtime, not recursive model queries |
+| [CRITIC: Tool-Interactive Critiquing](https://arxiv.org/abs/2305.11738) | External tool-interactive validation of intermediate agent outputs | Tool execution must remain bounded within authorized scratch environments |
+| [USENIX Security: Package Hallucinations](https://www.usenix.org/conference/usenixsecurity24/presentation/lazaar) | Defense against package hallucination and slopsquatting via strict identity-surface-probe verification | Local inspection cannot attest to external package repository integrity |
+| [Empirical Mutation Testing (Just et al., FSE 2014)](https://homes.cs.washington.edu/~mernst/pubs/mutation-testing-fse2014.pdf) | Targeted mutation as an oracle sensitivity check; explicit tests for the 27% uncoupled semantic faults | Mutation testing is not an exhaustive substitute for domain-specific contract testing |
+| [Google Mutation Testing (Petrovic & Ivankovic, ICSE 2018)](https://testing.googleblog.com/2021/04/mutation-testing.html) | AST-delta scoped mutants to prevent mutant explosion and equivalent mutant fatigue | Scoping must still exercise the complete modified contract boundary |
+| [Industrial TDD Defect Study (Nagappan et al., EMSE 2008)](https://www.microsoft.com/en-us/research/publication/realizing-quality-improvement-through-test-driven-development-results-and-experiences-of-four-industrial-teams/) | Define independent acceptance oracles before implementation to drive defect density reduction | Upfront test authoring effort must be scaled to change consequence |
+| [Brendan Gregg: Systems Performance & USE Method](https://www.brendangregg.com/usemethod.html) | Resource-oriented performance triage (Utilization, Saturation, Errors) before instruction tuning | Checklist triage does not replace application-level latency profile analysis |
+| [Saltzer & Schroeder: Information Protection (IEEE 1975)](https://ieeexplore.ieee.org/document/1451869) | Complete mediation and fail-safe defaults applied to authorization, caches, and async jobs | Formal models do not guarantee bug-free implementation of the security controls |
+| [Lost in the Middle (Liu et al., TACL 2024)](https://arxiv.org/abs/2307.03172) | Working context boundary pinning and raw log isolation to prevent attention degradation in long tasks | State pinning requires active discipline; compaction must not discard active constraints |
+
+## Extreme systems performance engineering sources (0.6.0)
+
+Reviewed on 2026-11-23. These primary systems engineering papers, manuals, and
+architecture references ground `references/systems-performance.md` and
+`scripts/compare_bench.py` across microarchitecture, memory hierarchy, lock-free
+memory models, SIMD/vectorization, high-performance I/O, and statistical
+measurement.
+
+| Primary source | Applied mechanism | Boundary |
+| --- | --- | --- |
+| [Yasin: Top-Down Microarchitecture Analysis Method (ISPASS 2014)](https://doi.org/10.1109/ISPASS.2014.6844459) | Classify CPU hot-path stalls into Frontend, Bad Speculation, Memory Bound, and Core Bound via PMU counters before tuning | Counter availability varies by CPU vendor, virtualization layer, and host permissions |
+| [Drepper: What Every Programmer Should Know About Memory (2007)](https://www.akkadia.org/drepper/cpumemory.pdf) | Cache hierarchy, SoA/hot-cold locality, cache-line alignment, TLB/huge pages, prefetching, non-temporal stores, and NUMA placement | Exact cache sizes, latencies, and prefetcher rules must be verified on the target CPU |
+| [Boehm & Adve: Foundations of the C++ Concurrency Memory Model (PLDI 2008)](https://doi.org/10.1145/1375581.1375591) | Data-race-free semantics (zero benign races), formal Acquire/Release happens-before proofs, and weak memory model soundness | Language-level proofs still require empirical testing under Miri/Loom/TSan/weak-memory targets |
+| [Mytkowicz et al.: Producing Wrong Data Without Doing Anything Obviously Wrong (ASPLOS 2009)](https://doi.org/10.1145/1508244.1508275) | Control and disclose measurement bias (pinning, governor, flags, memory/link layout sensitivity, interleaved A-B runs, nonparametric CI) | Eliminating every environmental confounder is infeasible on shared or virtualized hosts; disclose limits |
+| [Gil Tene: HdrHistogram & Coordinated Omission](https://github.com/HdrHistogram/HdrHistogram) | Open-loop scheduled-arrival latency measurement (`t_sched`), offered vs achieved load, and distortion-free tail percentiles | Open-loop generators must still match realistic workload distributions and burst profiles |
+| [Gunther: Universal Scalability Law (arXiv:0808.1431)](https://arxiv.org/abs/0808.1431) | Multi-core scaling sweeps capturing serialization (`alpha`) and cache-coherency crosstalk (`beta`) to detect retrograde scaling | Analytical model fits require measured multi-core samples on the target machine |
+| [McKenney: Is Parallel Programming Hard, And, If So, What Can You Do About It?](https://www.kernel.org/pub/linux/kernel/people/paulmck/perfbook/perfbook.html) | Contention-elimination hierarchy, shared-nothing partitioning, RCU/EBR/hazard-pointer reclamation, and memory barrier discipline | Lock-free complexity is justified only when profiling shows contention on a real bottleneck |
+| [Langdale & Lemire: Parsing Gigabytes of JSON per Second (VLDB Journal 2019)](https://doi.org/10.1007/s00778-019-00578-5) | SIMD/SWAR branchless structural parsing, runtime ISA dispatch, and scalar fallback with differential correctness verification | SIMD gains depend on ISA support, data width, and avoiding frequency throttling or page-boundary OOB |
+| [Boncz, Zukowski & Nes: MonetDB/X100 Hyper-Pipelining Query Execution (CIDR 2005)](http://cidrdb.org/cidr2005/papers/P19.pdf) | Columnar L1/L2-sized batch vectorized execution amortizing virtual dispatch, branches, and synchronization | Batch sizing must respect tail-latency budgets on low-latency streaming pipelines |
+| [Axboe: Efficient IO with io_uring (2019)](https://kernel.dk/io_uring.pdf) | Batched async submission/completion rings, registered buffers, and syscall amortization | Linux-specific kernel interface; requires kernel version/seccomp verification and portability fallbacks |
+| [Bakhvalov: Performance Analysis and Tuning on Modern CPUs](https://book.easyperf.net/perf_book) | Practical `perf`, `perf c2c`, `llvm-mca`, optimization remarks, branch/ILP tuning, and compiler/PGO/BOLT verification | Microarchitectural tuning applies only to measured hot paths after algorithmic/layout tiers |
+| [Agner Fog: Software Optimization Resources](https://www.agner.org/optimize/) | Execution port throughput/latency, dependency-chain breaking, calling/aliasing costs, and instruction-level trade-offs | Instruction tables are CPU-microarchitecture specific; verify with generated assembly and profiling |
+| [TigerBeetle: TIGER_STYLE Engineering Discipline](https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md) | Upfront static memory allocation, explicit resource bounds, zero-ambiguity invariants, and deterministic simulation testing | Static allocation applies to bounded systems workloads; adapt bounds explicitly for dynamic workloads |
 
 ## Attribution and licensing
 

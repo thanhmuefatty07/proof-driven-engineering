@@ -4,8 +4,16 @@
 
 Identify protected assets, attacker/caller capabilities, entry points, trust
 boundaries, privileged actions, tenant/resource ownership, data flows, and
-deployment assumptions. Trace untrusted input to its sensitive decision or sink.
-For each important path retain:
+deployment assumptions. Ground security architecture in Saltzer & Schroeder's
+protection principles (IEEE 1975):
+- **Complete Mediation:** Every access to every object must be checked for
+  authorization; no caching, buffering, or async dispatch may bypass checks.
+- **Fail-Safe Defaults:** Default access is deny; permissions must be granted explicitly.
+- **Economy of Mechanism:** Security designs must remain small, simple, and inspectable.
+- **Least Privilege:** Every process and component operates using the minimum authority needed.
+- **Least Common Mechanism:** Minimize shared state and mechanisms between tenants to prevent cross-talk.
+
+Trace untrusted input to its sensitive decision or sink. For each important path retain:
 
 `attacker control -> reachable path -> broken invariant -> impact -> control -> test`.
 
@@ -16,11 +24,17 @@ reading real secrets, exploiting live users, or using production identities.
 ## Enforce the invariant at its owner
 
 - Enforce authentication and resource/tenant authorization on the server before
-  disclosure or mutation, including cache hits and background jobs. Revalidate
-  privilege where ownership or permission can change.
+  disclosure or mutation, including cache hits and background jobs. The Complete
+  Mediation Gate requires:
+  * Cache keys must cryptographically bind tenant ID, user identity, and permission
+    hashes (never cache by object ID alone).
+  * Invalidation triggers immediately upon permission change or data modification.
+  * Negative cross-tenant tests must confirm Tenant B cannot retrieve Tenant A's cached data.
 - Derive sensitive identity, tenant, role, price, and ownership from authoritative
   state. Client assertions are input, not permission. Validate transitions as
-  well as individual fields; deny undefined states.
+  well as individual fields; deny undefined states. Default-deny boundary invariant:
+  all external entry points and deserializers must validate types, lengths, ranges,
+  and schemas, failing closed (rejecting unknown or extra fields).
 - Use parameterized query/process APIs and contextual output encoding. Validate
   boundary schemas, size/depth/ranges, canonical representation, and failure paths.
   Do not assume internal/deserialized data remains trusted indefinitely.
@@ -69,13 +83,25 @@ failure. Pin tool/config versions as required by the project. Review findings;
 do not suppress them merely to produce a green report. Tests for a sanitizer or
 scanner's limitations may supplement the result.
 
-For web application controls, consult the official
-[OWASP ASVS](https://owasp.org/projects/asvs) and record the actual version/control
-used when asserting conformance. For lifecycle gaps, consult
-[NIST SSDF](https://csrc.nist.gov/projects/ssdf) and map relevant practices to
-specific project gates. Do not claim certification or compliance from this skill.
+For web application and API controls, consult the official
+[OWASP ASVS](https://owasp.org/projects/asvs) and
+[OWASP API Security Top 10 (2023)](https://owasp.org/API-Security/editions/2023/en/0x11-t10/).
+Target top API vulnerabilities:
+- **BOLA / IDOR:** Broken Object Level Authorization across tenant boundaries.
+- **BPOA / Mass Assignment:** Broken Object Property Level Authorization during creation/update.
+- **Unrestricted Resource Consumption:** Unbounded pagination, oversized payloads, regex DoS.
+- **SSRF:** Unvalidated outbound destination URLs targeting internal services.
+For lifecycle gaps, consult [NIST SSDF](https://csrc.nist.gov/projects/ssdf) and map
+relevant practices to specific project gates. Do not claim certification or compliance from this skill.
 
 Prefer APIs/types/defaults that make the safe path difficult to misuse. Keep
 errors actionable without disclosing internals. Critical fixes need regression
 and recovery evidence proportionate to the risk. Report the examined threat model,
 remaining assumptions, and unavailable tests; never claim complete security.
+
+## Primary references
+
+- [Saltzer & Schroeder: Information Protection (IEEE 1975)](https://ieeexplore.ieee.org/document/1451869)
+- [OWASP API Security Top 10 (2023)](https://owasp.org/API-Security/editions/2023/en/0x11-t10/)
+- [OWASP ASVS](https://owasp.org/projects/asvs)
+- [NIST SSDF](https://csrc.nist.gov/projects/ssdf)

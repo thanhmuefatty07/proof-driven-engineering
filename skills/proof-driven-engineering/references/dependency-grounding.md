@@ -14,9 +14,19 @@ declared version range from the resolved and actually running version. Do not
 silently upgrade the project to match a newer documentation example.
 
 Confirm the ecosystem's distribution name, import/namespace name, owner/upstream,
-release, and artifact source separately. These names need not match: in Python,
-distribution names do not establish which import modules they provide. Verify
-the mapping from trusted project metadata or upstream documentation/source.
+release, and artifact source separately. Under PyPA and packaging standards (PEP 508,
+PEP 517, PEP 621), distribution names (what a package manager installs) often differ
+from import module namespaces (e.g., `PyYAML` provides `yaml`, `beautifulsoup4` provides
+`bs4`, `scikit-learn` provides `sklearn`). Never assume an import name can be installed
+directly. Verify the mapping from trusted project metadata or upstream source.
+
+Large language models hallucinate package names at rates between 5.2% and 21.7%
+(Lazaar et al., USENIX Security 2024). Attackers actively exploit this via "slopsquatting,"
+monitoring generated code patterns to register phantom package names on PyPI, npm, or
+crates.io containing malicious payloads. Agents are strictly forbidden from speculative
+dependency installation: never run `pip install`, `npm install`, or `cargo add` to resolve
+a `ModuleNotFoundError` or missing import unless the user explicitly requested adding that
+specific package.
 
 For a new dependency, cross-check the official upstream release against trusted
 registry metadata before any installation. A registered name, popularity, or
@@ -34,24 +44,22 @@ integrity checks or add an untrusted registry to satisfy a missing import.
 
 ## Prove the surface and its behavior
 
-Prefer version-matched official reference/specification and upstream source,
-then shipped types/stubs, actual schemas/help, and safe inspection of already
-trusted local code. A latest-version example, generated answer, search snippet,
-or unrelated package with a similar name cannot establish support.
+Execute the strict **3-Stage Grounding Protocol**:
 
-For each new assumption, check the applicable export/import path, signature,
-parameter names/types/defaults, return shape, sync/async behavior, errors,
-cancellation, units, side effects, and platform/version constraints. Record only
-decision-relevant facts, not a copied manual. If a signature is unavailable to
-reflection, use source/types/docs and a bounded behavior probe; do not fabricate
-it. Resolve disagreements with the actual target version and its changelog.
-
-Exercise a minimal real integration in the target environment, then the affected
-project compiler/type/build and behavioral checks. Include negative/boundary
-cases where important assumptions can fail. A mock that accepts invented members
-cannot validate a third-party contract; successful import/compilation alone does
-not prove runtime semantics. Never patch a dependency or invent a compatibility
-shim merely to hide an unsupported call.
+1. **Stage 1 (Identity):** Confirm package identity and exact resolved version
+   in project lockfiles or manifests (`pyproject.toml`, `requirements.txt`,
+   `package-lock.json`, `Cargo.lock`). Distinguish declared ranges from installed versions.
+2. **Stage 2 (Surface Inspection):** Inspect version-matched export symbols, classes,
+   and functions using safe runtime reflection (e.g. `python -c "import mod; print(dir(mod))"`,
+   `inspect.signature()`, or static type stubs `.pyi`). Never guess parameter names,
+   optional flags, or return shapes. If a signature is unavailable to reflection,
+   use official version-matched documentation and source; do not fabricate it.
+3. **Stage 3 (Target Probe):** Execute a minimal 1-line or 1-call integration probe
+   in the target environment before writing consumer code. Include negative and
+   boundary cases where important assumptions can fail. A mock that accepts invented
+   members cannot validate a third-party contract; successful import/compilation alone
+   does not prove runtime semantics. Never patch a dependency or invent a compatibility
+   shim merely to hide an unsupported call.
 
 Unsupported symbol/argument errors reject the current hypothesis. Reinspect the
 installed version, import shadowing, documented surface, and call shape before
@@ -74,3 +82,9 @@ an unrequested architecture or invent an implementation of a vendor contract.
 Broaden research when primary sources disagree or leave a material assumption
 open. Stop when identity, version, surface, behavior, and affected acceptance are
 established at the required risk level. Source count is not a quality metric.
+
+## Primary references
+
+- [USENIX Security: Package Hallucinations (Lazaar et al., 2024)](https://www.usenix.org/conference/usenixsecurity24/presentation/lazaar)
+- [PyPA Distribution Package vs Import Package](https://packaging.python.org/en/latest/discussions/distribution-package-vs-import-package/)
+- [PEP 508 - Dependency specification for Python Software](https://peps.python.org/pep-0508/)

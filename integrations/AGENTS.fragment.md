@@ -7,7 +7,9 @@ point and only the references needed by the task.
 
 Keep the user's current objective, constraints, authorization, and acceptance
 checks recoverable across interruptions. Optimize measured performance within
-correctness, security, compatibility, and resource constraints. Verify the actual
+correctness, security, compatibility, and resource constraints; load
+`references/systems-performance.md` for hot-path, native, concurrent, SIMD,
+memory/cache-sensitive, or low-latency systems work. Verify the actual
 result and invalidate evidence when its inputs change. Keep trivial work light.
 
 For testing, read the skill's `references/testing-quality.md`: identify the real

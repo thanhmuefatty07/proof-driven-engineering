@@ -1,5 +1,68 @@
 # Validation Status
 
+## Release 0.6.0: Extreme Systems Performance & Research-Backed Engineering
+
+Updated on 2026-11-23. Preserves 100% of Release 0.5.0 capabilities and recovers
+omitted 0.4.1–0.4.5 test-portfolio, mutation, runtime-selection, citation, and
+Vietnamese-documentation assets from `origin/codex/test-quality-portfolio-20261016`
+(recorded in `BRANCH_EVALUATION.md`; remote branch retained untouched). Adds:
+
+- Empirical research upgrades across core references: LATS 2-strike backtracking,
+  Zeller infection-chain debugging, Gregg USE/RED, Bentley hierarchy, Roofline
+  Model, Saltzer-Schroeder Complete Mediation + OWASP API Top 10, 3-stage
+  dependency grounding (slopsquatting ban), Just et al. 27% uncoupled mutation +
+  Google AST-delta scoping, CoVe factored self-verification, CRITIC extrinsic
+  feedback primacy, and Lost-in-the-Middle context boundary pinning.
+- Dedicated extreme systems performance engineering reference
+  (`references/systems-performance.md`) covering TMAM hardware triage, data-oriented
+  SoA/hot-cold/pointer-chasing elimination, 128B false-sharing isolation, NUMA
+  first-touch, zero hot-path allocation and hidden refcount-churn elimination,
+  formal Boehm/Adve Acquire-Release lock-free memory ordering and x86-64 TSO vs
+  ARM64/RISC-V weak-memory verification, columnar batching and runtime-dispatched
+  SIMD, `io_uring`/`O_DIRECT`/honest durability, compiler/assembly libcall audits,
+  Mytkowicz/Gil Tene/Gunther anti-illusion benchmarking, and scalar differential
+  oracles.
+- Optional zero-dependency statistical A/B benchmark comparator
+  (`scripts/compare_bench.py`, Python 3.11+ stdlib) with nonparametric paired/unpaired
+  bootstrap 95% CI, Cliff's delta, Mann-Whitney U, and noise-floor gating, plus
+  unit and adversarial tests (`tests/test_bench_compare.py`).
+- Extended behavioral evaluation suite (18 total cases in `evals/cases.json`),
+  including `fixtures/systems_review/ring_parser.rs` and
+  `fixtures/systems_kernel/` (`kernel.py` + `test_kernel.py`).
+
+### Automated Package, Tool & Fixture Checks (2026-11-23)
+
+Checked on Windows AMD64, Python 3.11.9 with PyYAML 6.0.3 (matching CI 3.11 target).
+Tests and runner are trusted for ordinary local checks, not independently attested.
+
+| Check | Observed result |
+| --- | --- |
+| `python -B -m unittest discover -s tests -v` | 30 discovered: 29 passed, 1 skipped (Windows symlink); exit 0 |
+| `python -B -m unittest discover -s evals/fixtures/catalog -v` | 3 passed; exit 0 |
+| `python -B -m unittest discover -s evals/fixtures/systems_kernel -v` | 3 passed; exit 0 |
+| `python -B scripts/check_preservation.py` | 0 unmapped removals vs `2f50e21`; 38/38 capabilities (`CAP-01..38`); `SKILL.md` 248 lines (`< 250`), description 361 chars (`<= 1024`); exit 0 |
+| `git diff --check` | No whitespace errors; exit 0 |
+
+### Paired Synthetic Behavioral Evaluations (RED vs. GREEN, 2026-11-23)
+
+Evaluations ran on fresh subagents in isolated read-only / `.local/` scratch
+workspaces; temporary `.local/` artifacts were deleted after parent verification.
+These are bounded synthetic acceptance examples, not a statistical proof of
+universal model compliance or superiority across all repositories.
+
+| Scenario | RED Baseline (v0.5.0) | GREEN Upgraded (v0.6.0) |
+| --- | --- | --- |
+| Rust 4-producer 10M/s telemetry codegen (`flash`) | Scattered 3-`Box` per-symbol heap allocations, 6B struct padding, unbounded SeqLock reader spin livelock, per-item `shutdown` atomic in `try_push`, mismatched 1M vs 20M single-run benchmarks, 16 inline comments/banners, unguarded `-C target-cpu=native` | Flat inline `[f64; 64]` per symbol, packed 24B `TelemetryEvent` with `size_of` assert, bounded `MAX_SEQLOCK_RETRIES`, `HeadCommitGuard` panic safety, `#[cold]` splitting, zero-alloc histogram, matched 7-round interleaved A-B-A-B runs, `perf --topdown`/`perf c2c`/Miri/Loom/ARM64 plan; caught `Arc::clone` in `drain_batch` and added explicit refcount-churn rule in REFACTOR |
+| Rust 10M/s market-tick aggregator design (`XHigh`) | `i128::checked_mul` on every tick (hidden `__muloti4` libcall), 64B slot alignment, startup-thread slot allocation (no NUMA first-touch), no TMAM/Mytkowicz/USL framing | Mathematically proved overflow-free `(i64 as i128).wrapping_mul(u32/u64)` (zero `__muloti4`), 128B isolated `PublishedSymbolSlot`, NUMA first-touch on pinned shard thread, formal Boehm fence-fence proof + ARM64 codegen, TMAM + USL + open-loop `t_sched` + `compare_bench.py` plan |
+| Live isolated `systems_kernel` optimization (`flash`, executed) | N/A (new 0.6.0 fixture) | Eliminated `O(E*S)` scan & per-event string/list allocations with `__slots__` + single pre-seeded lookup; parent reran 3/3 contract tests (exit 0) and verified canonical fixture unchanged; 9x5 differential oracle passed; 10 interleaved A-B runs validated via `compare_bench.py --require-improvement`: `66.90x` median speedup (`1496.85 ms -> 22.38 ms`, paired bootstrap 95% CI `[53.68x, 98.26x]`, Cliff's delta `+1.000`, `p=0.000157`) on shared Windows host |
+
+### Explicit `NOT VERIFIED` Limits (Release 0.6.0)
+
+- Escaping-symlink runtime test skipped on Windows (`NOT VERIFIED` locally; covered by Ubuntu CI matrix).
+- Generated Rust designs/code skeletons in the read-only design/codegen evals were not compiled or executed under Miri/Loom/TSan/ARM64 hardware (`NOT VERIFIED`).
+- Live `systems_kernel` timings ran on a shared Windows host without isolated physical core pinning or locked CPU power governor (`NOT VERIFIED` for hardware-isolated low-variance benchmarking).
+- Cross-platform Linux/Python 3.13 CI runs remain `NOT VERIFIED` until GitHub Actions executes on the pushed commit.
+
 ## Release 0.5.0: Outcome-First Systems Engineering
 
 Instruction and documentation update on 2026-10-18. The update preserves the
@@ -42,6 +105,71 @@ obeys the new rules. No new consuming-agent run, paired comparison, cross-platfo
 run, live PR/plugin review, native security scan, or independent anti-tamper
 observer is claimed. Exact compiler/runtime optimization remains workload-specific;
 no per-line/global optimum, exhaustive diagnosis, or future compliance is proven.
+
+## Release 0.4.5: Minimal Discriminating Test Portfolio
+
+Published on 2026-10-17 to branch `codex/test-quality-portfolio-20261016`. This instruction-only update requires a compact task-note case map before adding, removing, or selecting tests: requirement, plausible wrong behavior, nearest existing check and exact gap, independent expected result, exercised boundary, decisive assertion, run/artifact cost, and verification limit. It defaults to the owning suite, requires a concrete distinct owner/boundary/runner/lifecycle/CI-selection reason for a new test file, and sets a stop condition once required defect classes have sensitive checks; inaccessible boundaries remain NOT VERIFIED. No executable code, test case, or dependency changed.
+
+| Check | Observed result |
+| --- | --- |
+| Bundled skill manifest validator | Passed locally on Windows Python 3.14.7 with PyYAML 6.0.3; exit 0 |
+| Local Markdown integrity | 22 relative links resolved; no missing targets or trailing whitespace |
+| Executable suites and consuming-agent evaluation | Not run for this instruction-only update; test quality and agent adoption remain NOT VERIFIED |
+| GitHub CI | No CI result is claimed by this validation record; remote execution remains NOT VERIFIED |
+
+## Release 0.4.4: Runtime Selection for Test Evidence
+
+Reviewed on 2026-10-17 from branch commit 9b0e583c4465c34668f5e3682abbcf950432cd25. This instruction-only update requires resolving the supported runtime from project metadata, lockfiles, toolchain pins, and CI, then verifying the runtime selected by the approved runner. It also distinguishes unsupported-runtime collection or syntax errors from product regressions. No executable code, test case, or dependency changed in the 0.4.4 commits.
+
+| Check | Observed result |
+| --- | --- |
+| Distributed skill metadata and runtime guidance | Inspected on the published branch: metadata is 0.4.4 and the runtime-selection rule is present in both the core skill and testing-quality reference |
+| GitHub status checks | No checks were returned for branch HEAD 9b0e583c4465c34668f5e3682abbcf950432cd25; remote CI remains NOT VERIFIED |
+| Executable suites and consuming-agent evaluation | Not run in this validation update; agent adoption and runtime behavior across projects remain NOT VERIFIED |
+
+## Release 0.4.3: Test-Runner Evidence Trust Limits
+
+Reviewed on 2026-10-17 from commits 06abd17a6c3046762de4f1c76f3b3131b5588ac1 and 4a3f1bdf6d6a276a5701e2e9c55162694236c037. This instruction-only update clarifies that runner output, reports, and hashes are evidence from a process, not independent proof that intended tests executed. It requires inspecting selected IDs, decisive assertions and host-observed exit status for ordinary checks; anti-tamper claims require an independent observer protected by an OS boundary. It adds no executable code, test case, or dependency.
+
+| Check | Observed result |
+| --- | --- |
+| Published reference content | Inspected on the branch; trust limits and the 0.4.3 skill metadata are present |
+| Executable suites and consuming-agent evaluation | Not run in this validation update; no new behavioral or anti-tamper result is claimed |
+| Remote CI status | The later 0.4.4 branch HEAD has no reported status checks; CI for these releases remains NOT VERIFIED |
+
+## Release 0.4.2: Targeted Mutation Sensitivity
+
+Reviewed on 2026-10-16. This instruction-only update clarifies when mutation
+checks add evidence and how to distinguish a killed mutant from a broken test
+run. It adds no runtime code, test case, or dependency.
+
+| Check | Observed result |
+| --- | --- |
+| Local testing-quality document integrity | Passed: the mutation guidance is present, its relative link resolves, whitespace is clean, and the skill metadata is 0.4.2 |
+| Primary-source review | Three first-party Google Testing Blog pages fetched and reviewed: Mutation Testing (2021), Increase Test Fidelity By Avoiding Mocks (2024), and Keep Tests Focused (2018) |
+| Executable package and catalog suites | Not rerun: this release changes instructions and release notes only; no executable files, tests, or dependencies changed. The 0.4.1 results below are historical evidence for that release, not a fresh 0.4.2 run. |
+
+No consuming-agent evaluation was run for the new mutation guidance. Whether agents consistently apply it remains NOT VERIFIED; the skill cannot mechanically enforce compliance.
+
+## Release 0.4.1: Evidence-Based Test Portfolio
+
+Checked on 2026-10-16 with Windows and Python 3.11.9. This instruction-only
+update adds a minimal-discriminating-set rule and evidence requirements before
+consolidating or deleting tests. It adds no executable code, test case, or
+dependency.
+
+| Check | Observed result |
+| --- | --- |
+| `python -m unittest discover -s tests -v` | 21 discovered: 20 passed, 1 skipped; exit 0 |
+| `python -m unittest discover -s evals/fixtures/catalog -v` | 3 passed; exit 0 |
+| `git diff --check` | No whitespace errors; exit 0 |
+| Scratch cleanup | Run-owned scratch root was empty and removed; verified absent |
+
+The skipped symlink test could not create a symlink in this environment; that
+runtime path remains `NOT VERIFIED`. No consuming-agent evaluation of the new
+test-consolidation rule was run. The 0.4.0 acceptance example predates this rule
+and is not evidence that agents follow it. Skill instructions guide behavior
+but do not mechanically enforce test quality or guarantee agent compliance.
 
 ## Release 0.4.0: Test Quality and Artifact Lifecycle
 

@@ -29,7 +29,7 @@ class PackageTests(unittest.TestCase):
 
     def test_local_references_resolve_within_the_distribution(self):
         for source in ROOT.rglob("*.md"):
-            if ".git" in source.parts or ".local" in source.parts:
+            if any(part in {".git", ".local", ".agents"} for part in source.parts):
                 continue
             for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", source.read_text(encoding="utf-8")):
                 if "://" in target or target.startswith("#"):

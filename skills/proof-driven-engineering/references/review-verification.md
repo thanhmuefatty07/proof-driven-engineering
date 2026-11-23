@@ -54,6 +54,21 @@ It defines oracle sensitivity, realistic boundary evidence, honest execution
 results, and ownership of temporary data. Package/schema checks alone cannot
 establish that an agent follows those instructions.
 
+Execute **Factored Self-Verification** (Chain-of-Verification / CoVe, Dhuliawala et al.,
+ACL 2024): to prevent confirmation bias, decompose verification into independent,
+isolated checks:
+1. Generate specific, targeted verification questions regarding modified API
+   signatures, type invariants, boundary behaviors, and error paths.
+2. Execute verification probes in isolation (e.g., via runtime reflection, isolated
+   subprocess calls, or independent tests) without biasing framing.
+3. Validate candidate outputs against the independent answers.
+
+Ground verification in **Tool-Interactive Critiquing** (CRITIC, Gou et al., ICLR 2024):
+models cannot reliably critique their own reasoning without external tool interaction.
+Every verification claim must cite an external tool receipt (test runner exit code,
+linter output, compiler diagnostic, schema check); introspective verbal claims of
+correctness are forbidden as evidence.
+
 Map acceptance criteria to their oracle: compiler/type check, direct behavior,
 integration/contract, user journey, property/fuzz, security reproduction, load,
 or recovery test. Match the oracle to the claim. Source text matching cannot show
@@ -122,8 +137,19 @@ It uses Python 3.11+ and the standard library only.
 
 ## Final evidence and limits
 
-Use concise outcome -> decisive evidence -> unresolved limitation. State measured
-metrics with conditions and units. If a check is unavailable, say
-`NOT VERIFIED - <check and reason>`. Do not upgrade self-review, scanner silence,
-or a synthetic test into production readiness. Produce findings before summaries
-for review tasks. Finish authorized implementation instead of stopping at a plan.
+Use concise outcome -> decisive evidence -> unresolved limitation. Maintain strict
+epistemic distinctions across all claims:
+- `MEASURED`: Quantified performance results with workload, units, sample size, and dispersion.
+- `VERIFIED within scope`: Confirmed by passing tests or runtime checks within the stated boundary.
+- `SOURCE-BACKED`: Grounded in authoritative documentation, standards, or empirical literature.
+- `INFERRED`: Logical deductions from verified premises, with explicit residual uncertainty.
+- `NOT VERIFIED - <check and reason>`: Unexercised boundaries, missing tools, or unrun checks.
+
+Do not upgrade self-review, scanner silence, or a synthetic test into production
+readiness. Produce findings before summaries for review tasks. Finish authorized
+implementation instead of stopping at a plan.
+
+## Primary references
+
+- [Chain-of-Verification (CoVe)](https://arxiv.org/abs/2309.11495)
+- [CRITIC: Tool-Interactive Critiquing](https://arxiv.org/abs/2305.11738)

@@ -26,6 +26,18 @@ gợi ý. Trước khi sửa, agent lập mô hình gọn về thành phần, ch
 dependency, ranh giới tin cậy/lỗi và luồng end-to-end bị ảnh hưởng. Được tự chọn
 cách làm trong ràng buộc, không được tự đổi mục tiêu hay mở rộng quyền hạn.
 
+Từ phiên bản 0.6.0, [tài liệu lập trình hệ thống hiệu năng cực hạn](skills/proof-driven-engineering/references/systems-performance.md)
+chuẩn hóa kỹ thuật tối ưu sát phần cứng (mechanical sympathy) cho hot path:
+phân loại nghẽn bằng TMAM (Frontend / Bad Speculation / Memory Bound / Core Bound)
+kết hợp USE/RED, Bentley và Roofline; thiết kế bộ nhớ hướng dữ liệu (SoA/AoSoA,
+tách hot/cold, triệt tiêu pointer-chasing, đệm 128B chống false sharing, cấp phát
+NUMA first-touch và zero-allocation trên hot path); đồng thời lock-free chuẩn mô hình
+bộ nhớ Acquire/Release chống bẫy x86-64 TSO khi chạy ARM64/RISC-V; SIMD/vector hóa
+có kiểm tra CPUID runtime kèm scalar fallback và differential oracle; gom syscall/I/O
+(`io_uring`, `O_DIRECT`, group-commit không đánh đổi `fsync`); kiểm toán assembly/IR
+phát hiện libcall ẩn; và đo lường open-loop chống Coordinated Omission kèm kiểm định
+thống kê phi tham số bằng [compare_bench.py](skills/proof-driven-engineering/scripts/compare_bench.py).
+
 Một PR logic có tối đa ba lượt review phối hợp, tính chung công cụ và subagent;
 đổi revision, reviewer hoặc chat không làm mới ngân sách. Hết lượt mà còn blocker
 thì phải bàn giao rõ, không tự duyệt hay mở lượt thứ tư. Chạy gate bắt buộc và
@@ -46,12 +58,20 @@ Hỏi agent status trong lúc làm không được làm mất nhiệm vụ gốc
 cũ phải được xem lại khi input thay đổi. Tool timeout sau một thao tác ghi phải
 được đối chiếu trạng thái trước khi thử lại.
 
-Từ phiên bản 0.4.0, [hướng dẫn kiểm thử](skills/proof-driven-engineering/references/testing-quality.md)
+Từ phiên bản 0.4.4, [hướng dẫn kiểm thử](skills/proof-driven-engineering/references/testing-quality.md)
 yêu cầu mỗi kiểm thử nhắm vào lỗi cụ thể, có kết quả kỳ vọng độc lập và đi qua
-ranh giới thực phù hợp với kết luận. Agent phải dùng lại coverage có ích, kiểm
-chứng test bắt được hành vi sai, báo trung thực phần chưa chạy và hoàn thành
-các gate bắt buộc. Số lượng test hoặc test chỉ kiểm tra mock không chứng minh
-được chất lượng sản phẩm.
+ranh giới thực phù hợp với kết luận. Agent phải dùng lại coverage có ích, chọn
+tập kiểm thử nhỏ nhất phân biệt các lỗi cần bắt, và chỉ gộp/xóa test khi giữ
+nguyên contract, oracle, ranh giới, tín hiệu lỗi và consumer. Số lượng test,
+coverage hoặc mock call tự chúng không chứng minh chất lượng hành vi.
+Mutation chỉ là phép thử độ nhạy có mục tiêu: không đặt mutation score làm
+ngưỡng nghiệm thu, không sinh mutant hàng loạt; lỗi build/import/collection
+không chứng minh đã phát hiện lỗi hành vi. Mutant tương đương hoặc ngoài
+contract không phải lý do để thêm assertion bám vào chi tiết triển khai.
+Kết quả runner cần được đối chiếu với node ID, assertion, exit code và runtime
+đã chọn thực tế. Hash bảo toàn byte sau khi thu thập nhưng không chứng minh test
+đã chạy; tuyên bố chống sửa kết quả cần observer độc lập cùng ranh giới OS, nếu
+thiếu phải ghi rõ NOT VERIFIED.
 
 Trước khi sinh dữ liệu, agent phải xác định nơi tạm, mức phát sinh dự kiến,
 dung lượng còn trống, chủ sở hữu và cách thu dọn. Cache build tương thích được

@@ -11,6 +11,7 @@ references loaded only when needed.
 
 - Identify the user's outcome, system boundaries, ownership, and affected end-to-end path before edits.
 - Optimize the measured bottleneck under correctness, security, and resource constraints.
+- Apply extreme systems performance discipline on hot paths: TMAM & Roofline triage, data-oriented SoA/hot-cold layouts, zero hot-path allocation, 128B false-sharing isolation, NUMA first-touch, formal Acquire/Release lock-free memory ordering, SIMD with runtime CPUID fallback, `io_uring`/syscall batching, assembly/IR libcall audits, scalar differential oracles, and open-loop statistically gated benchmarks (`compare_bench.py`).
 - Permit complex techniques when comparable measurements justify their benefit.
 - Trace architectural ownership and producer/consumer contracts before changing them.
 - Ground dependency identity, resolved versions, imports, APIs, flags, and configuration in primary evidence before integration.
@@ -80,16 +81,18 @@ full skill. This repository does not automatically edit host rules or settings.
 skills/proof-driven-engineering/
   SKILL.md
   agents/openai.yaml
-  references/                 Architecture, security, dependency grounding, test quality, continuity, verification
+  references/                 Architecture, extreme systems performance, security, dependency grounding, test quality, continuity, verification
   scripts/check_evidence.py    Optional recorded-coverage/freshness gate
+  scripts/compare_bench.py     Optional nonparametric A/B benchmark statistical comparator
 evals/                        Synthetic behavioral prompts and fixtures
-tests/                        Package and evidence-gate checks
+tests/                        Package, evidence-gate, and benchmark-comparator checks
 integrations/                 Optional host rule fragment
 ```
 
 The instructions have no runtime dependencies or mandatory sibling skills.
-The optional evidence gate uses Python 3.11+ and the standard library. Its checks
-cannot attest command execution or infer omitted requirements.
+The optional evidence gate and statistical benchmark comparator use Python 3.11+
+and the standard library. Their checks cannot attest command execution, hardware
+isolation, or infer omitted requirements.
 
 ## Validate a checkout
 
@@ -97,6 +100,7 @@ cannot attest command execution or infer omitted requirements.
 python -m pip install -r requirements-dev.txt
 python -m unittest discover -s tests -v
 python -m unittest discover -s evals/fixtures/catalog -v
+python -m unittest discover -s evals/fixtures/systems_kernel -v
 git diff --check
 ```
 
